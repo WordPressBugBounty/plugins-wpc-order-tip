@@ -1,0 +1,430 @@
+# Copyright (C) 2024 WPClever
+# This file is distributed under the same license as the WPC Order Tip for WooCommerce plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: WPC Order Tip for WooCommerce 3.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wpc-order-tip\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2024-08-16T13:42:33+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.5.0\n"
+"X-Domain: wpc-order-tip\n"
+
+#. Plugin Name of the plugin
+msgid "WPC Order Tip for WooCommerce"
+msgstr ""
+
+#. Plugin URI of the plugin
+msgid "https://wpclever.net/"
+msgstr ""
+
+#. Description of the plugin
+msgid "WPC Order Tip is a plugin that enables customers to add extra amounts to their order as a tip or donation to the seller or specified recipients."
+msgstr ""
+
+#. Author of the plugin
+msgid "WPClever"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://wpclever.net"
+msgstr ""
+
+#: includes/class-backend.php:42
+#: includes/templates/tip.php:64
+msgid "Set a value using a number (eg. \"10\") or percentage (eg. \"15%\" of order subtotal)"
+msgstr ""
+
+#: includes/class-backend.php:43
+#: includes/templates/tip.php:30
+#: includes/templates/tip.php:69
+msgid "remove"
+msgstr ""
+
+#: includes/class-backend.php:68
+msgid "WPC Order Tip"
+msgstr ""
+
+#: includes/class-backend.php:68
+msgid "Premium"
+msgstr ""
+
+#. translators: stars
+#: includes/class-backend.php:71
+msgid "Thank you for using our plugin! If you are satisfied, please reward it a full five-star %s rating."
+msgstr ""
+
+#: includes/class-backend.php:73
+msgid "Reviews"
+msgstr ""
+
+#: includes/class-backend.php:74
+msgid "Changelog"
+msgstr ""
+
+#: includes/class-backend.php:75
+msgid "Discussion"
+msgstr ""
+
+#: includes/class-backend.php:80
+msgid "Settings updated."
+msgstr ""
+
+#: includes/class-backend.php:86
+#: includes/class-backend.php:301
+msgid "Settings"
+msgstr ""
+
+#: includes/class-backend.php:89
+#: includes/class-backend.php:223
+msgid "Localization"
+msgstr ""
+
+#: includes/class-backend.php:92
+msgid "Tip Reports"
+msgstr ""
+
+#: includes/class-backend.php:95
+#: includes/class-backend.php:302
+msgid "Premium Version"
+msgstr ""
+
+#: includes/class-backend.php:97
+msgid "Essential Kit"
+msgstr ""
+
+#: includes/class-backend.php:112
+msgid "Position on cart page"
+msgstr ""
+
+#: includes/class-backend.php:115
+msgid "Before cart"
+msgstr ""
+
+#: includes/class-backend.php:116
+msgid "After coupon"
+msgstr ""
+
+#: includes/class-backend.php:117
+msgid "Before totals"
+msgstr ""
+
+#: includes/class-backend.php:118
+msgid "After cart"
+msgstr ""
+
+#: includes/class-backend.php:119
+#: includes/class-backend.php:133
+msgid "None (hide it)"
+msgstr ""
+
+#: includes/class-backend.php:121
+#: includes/class-backend.php:135
+msgid "You also can use shortcode [wpcot] to place it where you want."
+msgstr ""
+
+#: includes/class-backend.php:125
+msgid "Position on checkout page"
+msgstr ""
+
+#: includes/class-backend.php:128
+msgid "Before checkout form"
+msgstr ""
+
+#: includes/class-backend.php:129
+msgid "Before order details"
+msgstr ""
+
+#: includes/class-backend.php:130
+msgid "After customer details"
+msgstr ""
+
+#: includes/class-backend.php:131
+msgid "Before order review"
+msgstr ""
+
+#: includes/class-backend.php:132
+msgid "After checkout form"
+msgstr ""
+
+#: includes/class-backend.php:139
+msgid "\"No, Thanks!\" button position"
+msgstr ""
+
+#: includes/class-backend.php:142
+msgid "First"
+msgstr ""
+
+#: includes/class-backend.php:143
+msgid "Last"
+msgstr ""
+
+#: includes/class-backend.php:144
+msgid "Before \"Other\" button"
+msgstr ""
+
+#: includes/class-backend.php:149
+msgid "Remove when clicking again"
+msgstr ""
+
+#: includes/class-backend.php:152
+#: includes/templates/tip.php:98
+#: includes/templates/tip.php:127
+msgid "Yes"
+msgstr ""
+
+#: includes/class-backend.php:153
+#: includes/templates/tip.php:97
+#: includes/templates/tip.php:126
+msgid "No"
+msgstr ""
+
+#: includes/class-backend.php:155
+msgid "Do you want to remove when clicking on an active tip?"
+msgstr ""
+
+#: includes/class-backend.php:159
+msgid "Button style"
+msgstr ""
+
+#: includes/class-backend.php:162
+msgid "Square"
+msgstr ""
+
+#: includes/class-backend.php:163
+msgid "Rounded"
+msgstr ""
+
+#: includes/class-backend.php:168
+msgid "Active button color"
+msgstr ""
+
+#. translators: color
+#: includes/class-backend.php:174
+msgid "Choose the color for the active button, default %s"
+msgstr ""
+
+#: includes/class-backend.php:178
+msgid "Tips"
+msgstr ""
+
+#: includes/class-backend.php:208
+msgid "+ Add tip"
+msgstr ""
+
+#: includes/class-backend.php:225
+msgid "Leave blank to use the default text and its equivalent translation in multiple languages."
+msgstr ""
+
+#: includes/class-backend.php:229
+#: includes/class-backend.php:232
+#: includes/class-frontend.php:117
+msgid "No, Thanks!"
+msgstr ""
+
+#: includes/class-backend.php:237
+#: includes/class-backend.php:240
+#: includes/class-frontend.php:158
+msgid "Other"
+msgstr ""
+
+#: includes/class-backend.php:245
+#: includes/class-backend.php:248
+#: includes/class-frontend.php:170
+msgid "Add"
+msgstr ""
+
+#: includes/class-backend.php:318
+msgid "Community support"
+msgstr ""
+
+#: includes/class-reports.php:31
+#: includes/class-reports.php:34
+msgid "Order Tip"
+msgstr ""
+
+#: includes/class-reports.php:46
+#: includes/class-reports.php:127
+#: includes/class-reports.php:236
+#: includes/class-reports.php:371
+msgid "Tip"
+msgstr ""
+
+#: includes/class-reports.php:144
+#: includes/class-reports.php:147
+#: includes/class-reports.php:217
+msgid "There are no orders with tips based on your date range."
+msgstr ""
+
+#: includes/class-reports.php:255
+#: includes/class-reports.php:404
+msgid "Order ID"
+msgstr ""
+
+#: includes/class-reports.php:256
+#: includes/class-reports.php:355
+#: includes/class-reports.php:405
+msgid "Order Status"
+msgstr ""
+
+#: includes/class-reports.php:257
+#: includes/class-reports.php:406
+msgid "Customer"
+msgstr ""
+
+#: includes/class-reports.php:258
+#: includes/class-reports.php:407
+msgid "Name"
+msgstr ""
+
+#: includes/class-reports.php:259
+#: includes/class-reports.php:408
+msgid "Value"
+msgstr ""
+
+#: includes/class-reports.php:260
+#: includes/class-reports.php:409
+msgid "Date/Time"
+msgstr ""
+
+#: includes/class-reports.php:331
+msgid "Total"
+msgstr ""
+
+#: includes/class-reports.php:332
+msgid "Currency"
+msgstr ""
+
+#: includes/class-reports.php:343
+msgid "From"
+msgstr ""
+
+#: includes/class-reports.php:349
+msgid "To"
+msgstr ""
+
+#: includes/class-reports.php:357
+#: includes/templates/tip.php:167
+msgid "All"
+msgstr ""
+
+#: includes/class-reports.php:369
+msgid "Name(s)"
+msgstr ""
+
+#: includes/class-reports.php:374
+msgid "Filter"
+msgstr ""
+
+#. translators: date
+#: includes/class-reports.php:395
+msgid "Displaying orders between %1$s and %2$s"
+msgstr ""
+
+#: includes/class-reports.php:399
+msgid "Export to CSV"
+msgstr ""
+
+#: includes/class-reports.php:445
+msgid "Total: "
+msgstr ""
+
+#: includes/templates/tip.php:14
+msgid "Default"
+msgstr ""
+
+#: includes/templates/tip.php:28
+msgid "move"
+msgstr ""
+
+#: includes/templates/tip.php:34
+msgid "Name *"
+msgstr ""
+
+#: includes/templates/tip.php:42
+msgid "Description"
+msgstr ""
+
+#: includes/templates/tip.php:50
+msgid "Values"
+msgstr ""
+
+#: includes/templates/tip.php:61
+msgid "label"
+msgstr ""
+
+#: includes/templates/tip.php:66
+msgid "value"
+msgstr ""
+
+#: includes/templates/tip.php:78
+msgid "+ New value"
+msgstr ""
+
+#: includes/templates/tip.php:84
+msgid "Default value"
+msgstr ""
+
+#: includes/templates/tip.php:89
+msgid "Default value will be selected automatically. It should match one of above values."
+msgstr ""
+
+#: includes/templates/tip.php:93
+msgid "Custom amount"
+msgstr ""
+
+#: includes/templates/tip.php:101
+#: includes/templates/tip.php:103
+msgid "min"
+msgstr ""
+
+#: includes/templates/tip.php:105
+#: includes/templates/tip.php:107
+msgid "step"
+msgstr ""
+
+#: includes/templates/tip.php:109
+#: includes/templates/tip.php:111
+msgid "max"
+msgstr ""
+
+#: includes/templates/tip.php:114
+#: includes/templates/tip.php:116
+msgid "default value"
+msgstr ""
+
+#: includes/templates/tip.php:123
+msgid "Is taxable"
+msgstr ""
+
+#: includes/templates/tip.php:129
+msgid "Define whether the tip is taxable."
+msgstr ""
+
+#: includes/templates/tip.php:134
+msgid "Tax class"
+msgstr ""
+
+#: includes/templates/tip.php:139
+msgid "Standard"
+msgstr ""
+
+#: includes/templates/tip.php:158
+msgid "User roles"
+msgstr ""
+
+#: includes/templates/tip.php:160
+msgid "Select which user roles that can see this tip group."
+msgstr ""
+
+#: includes/templates/tip.php:168
+msgid "User (logged in)"
+msgstr ""
+
+#: includes/templates/tip.php:169
+msgid "Guest (not logged in)"
+msgstr ""

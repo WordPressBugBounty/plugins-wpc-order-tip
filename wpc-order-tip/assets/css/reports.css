@@ -1,0 +1,12 @@
+#wpcot-reports-date-range {
+    display: flex;
+    margin: 10px 0;
+}
+
+#displaying-from-to span {
+    font-weight: bold;
+}
+
+#wpcot-reports-date-range .wpcot-reports-col {
+    margin-right: 20px;
+}

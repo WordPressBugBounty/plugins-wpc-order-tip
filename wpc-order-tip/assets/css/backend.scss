@@ -1,0 +1,286 @@
+.wpcot-tips-wrapper {
+  --border: #c3c4c7;
+  --primary: #2271b1;
+  --background2: #f7f7f7;
+
+  .woocommerce_options_panel & {
+    max-width: 100%;
+  }
+
+  .wpcot-tips {
+    position: relative;
+    margin-bottom: 10px;
+
+    &.wpcot-all {
+      .wpcot-tip {
+        .wpcot-tip-header {
+          padding-left: 20px;
+
+          .wpcot-tip-move {
+            display: none !important;
+          }
+        }
+      }
+    }
+
+    .wpcot-tip {
+      display: block;
+      width: 100%;
+      padding: 0;
+      margin-bottom: 10px;
+      background-color: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      position: relative;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .wpcot-tip-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 40px;
+        line-height: 40px;
+        padding: 0 40px 0 0;
+        border: none;
+        cursor: pointer;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+
+        &:after {
+          content: "\f140";
+          display: inline-block;
+          width: 40px;
+          height: 40px;
+          text-align: center;
+          font: normal 16px/40px dashicons;
+          position: absolute;
+          top: 0;
+          right: 0;
+          speak: none;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          text-decoration: none !important;
+        }
+
+        .wpcot-tip-move {
+          cursor: move;
+          width: 40px;
+          height: 40px;
+          flex: 0 0 40px;
+          text-align: center;
+          font-size: 0;
+
+          &:before {
+            content: "\f545";
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            font: normal 12px/40px dashicons;
+            speak: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-decoration: none !important;
+          }
+        }
+      }
+
+      .wpcot-tip-content {
+        border-top: 1px solid var(--border);
+        display: none;
+        padding: 0 20px;
+        background: var(--background2);
+      }
+
+      .wpcot-tip-line {
+        padding: 15px 0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        &.wpcot-tip-line-disabled {
+          opacity: .5;
+          pointer-events: none;
+        }
+
+        .wpcot-show-if-custom {
+          margin-left: 10px;
+          display: none;
+        }
+
+        .wpcot-values {
+          flex-grow: 1;
+
+          .wpcot-value {
+            padding: 5px 0;
+
+            .wpcot-remove-value {
+              display: inline-block;
+              width: 20px;
+              text-align: center;
+              cursor: pointer;
+            }
+          }
+        }
+
+        .wpcot-new-value {
+          margin-top: 5px;
+        }
+
+        .input-panel {
+          position: relative;
+          flex-grow: 1;
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+
+          p {
+            flex-grow: 1;
+            width: 100%;
+          }
+
+          .wpcot-label-wrapper, .wpcot-value-wrapper {
+            display: inline-block;
+            width: calc(50% - 20px);
+            margin-right: 10px;
+
+            input {
+              width: 100%;
+            }
+          }
+
+          .wpcot-remove-value {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            text-align: center;
+            cursor: pointer;
+
+            &:hover {
+              color: #ff4f3b;
+            }
+          }
+
+          + button {
+            margin-top: 10px;
+          }
+        }
+
+        label {
+          float: none;
+          width: auto;
+          flex: auto;
+        }
+
+        > label {
+          float: none;
+          width: 120px;
+          flex: 0 0 120px;
+        }
+
+        input {
+          &[type="text"],
+          &[type="number"] {
+            width: auto;
+            float: none;
+          }
+        }
+
+        .input-block {
+          display: block !important;
+          width: 100% !important;
+          margin-top: 8px;
+          float: none;
+        }
+
+        &:last-child {
+          border-bottom: 0;
+        }
+
+        .select2-container {
+          width: 100% !important;
+          max-width: 100% !important;
+          float: none !important;
+          box-sizing: border-box !important;
+          display: inline-block !important;
+        }
+      }
+
+      &.active {
+        .wpcot-tip-header {
+          &:after {
+            content: "\f142";
+          }
+        }
+
+        .wpcot-tip-content {
+          display: block;
+        }
+      }
+
+      &:hover {
+        .wpcot-remove-tip {
+          opacity: 1;
+          visibility: visible;
+        }
+      }
+
+      .wpcot-tip-label {
+        font-weight: 600;
+        flex-grow: 1;
+        text-overflow: ellipsis;
+        font-size: 14px;
+      }
+
+      .wpcot-remove-tip {
+        color: #ff4f3b;
+        text-decoration: underline;
+        margin: 0 5px;
+        cursor: pointer;
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+  }
+
+  .nav-tab-wrapper {
+    .nav-tab-active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+  }
+
+  .nav-tab-content {
+    display: none;
+    border: 1px solid var(--border);
+    border-top: 0;
+    background: #fff;
+
+    &.active {
+      display: block;
+    }
+  }
+
+  .wpcot-single-product & {
+    padding: 12px 12px 0 12px;
+  }
+}
+
+.woocommerce_options_panel {
+  .wpcot-tips-new {
+    padding: 0 12px 12px 12px;
+  }
+}
