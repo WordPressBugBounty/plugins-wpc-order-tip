@@ -3,7 +3,7 @@
 Plugin Name: WPC Order Tip for WooCommerce
 Plugin URI: https://wpclever.net/
 Description: WPC Order Tip is a plugin that enables customers to add extra amounts to their order as a tip or donation to the seller or specified recipients.
-Version: 3.1.0
+Version: 3.1.1
 Author: WPClever
 Author URI: https://wpclever.net
 Text Domain: wpc-order-tip
@@ -12,10 +12,10 @@ Requires Plugins: woocommerce
 Requires at least: 4.0
 Tested up to: 6.6
 WC requires at least: 3.0
-WC tested up to: 9.1
+WC tested up to: 9.3
 */
 
-! defined( 'WPCOT_VERSION' ) && define( 'WPCOT_VERSION', '3.1.0' );
+! defined( 'WPCOT_VERSION' ) && define( 'WPCOT_VERSION', '3.1.1' );
 ! defined( 'WPCOT_LITE' ) && define( 'WPCOT_LITE', __FILE__ );
 ! defined( 'WPCOT_FILE' ) && define( 'WPCOT_FILE', __FILE__ );
 ! defined( 'WPCOT_DIR' ) && define( 'WPCOT_DIR', plugin_dir_path( __FILE__ ) );

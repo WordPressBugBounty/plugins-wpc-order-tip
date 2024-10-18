@@ -29,7 +29,7 @@
 
       $.ajax({
         type: 'POST', url: ajaxurl, dataType: 'json', data: ({
-          action: 'ajax_display_reports',
+          action: 'wpcot_display_reports',
           names: $name.val(),
           from: $from.val(),
           to: $to.val(),

@@ -60,6 +60,9 @@ class Wpcot_Frontend {
 				break;
 		}
 
+		// fragments
+		add_filter( 'woocommerce_update_order_review_fragments', [ $this, 'order_review_fragments' ] );
+
 		add_action( 'woocommerce_checkout_order_created', [ $this, 'clear_cookie' ] );
 		add_action( 'woocommerce_thankyou', [ $this, 'clear_cookie' ] );
 
@@ -91,6 +94,12 @@ class Wpcot_Frontend {
 
 	public function show_tips() {
 		echo self::get_tips();
+	}
+
+	function order_review_fragments( $fragments ) {
+		$fragments['.wpcot-tips'] = self::get_tips();
+
+		return $fragments;
 	}
 
 	public function get_tips() {

@@ -7,8 +7,7 @@ class Wpcot_Reports {
 	function __construct() {
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_filter( 'woocommerce_admin_reports', [ $this, 'tip_reports' ] );
-		add_action( 'wp_ajax_ajax_display_reports', [ $this, 'ajax_display_reports' ] );
-		add_action( 'wp_ajax_nopriv_ajax_display_reports', [ $this, 'ajax_display_reports' ] );
+		add_action( 'wp_ajax_wpcot_display_reports', [ $this, 'ajax_display_reports' ] );
 		add_action( 'admin_init', [ $this, 'export_tips_csv' ] );
 	}
 

@@ -4,8 +4,8 @@ Donate link: https://wpclever.net
 Tags: woocommerce, wpc, tip, tips, donations
 Requires at least: 4.0
 Tested up to: 6.6
-Version: 3.1.0
-Stable tag: 3.1.0
+Version: 3.1.1
+Stable tag: 3.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -71,8 +71,12 @@ Please try other plugins from us:
 
 == Changelog ==
 
+= 3.1.1 =
+* Updated: Optimized the code
+* Updated: Compatible with WP 6.6 & Woo 9.3
+
 = 3.1.0 =
-* Updated: Using WC_AJAX for frontend
+* Updated: Use WC_AJAX for frontend
 
 = 3.0.3 =
 * Fixed: Percentage value
