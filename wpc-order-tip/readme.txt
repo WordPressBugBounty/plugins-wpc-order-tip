@@ -3,9 +3,9 @@ Contributors: wpclever
 Donate link: https://wpclever.net
 Tags: woocommerce, wpc, tip, tips, donations
 Requires at least: 4.0
-Tested up to: 6.6
-Version: 3.1.1
-Stable tag: 3.1.1
+Tested up to: 6.7
+Version: 3.1.2
+Stable tag: 3.1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,6 +70,10 @@ Please try other plugins from us:
 4. Go to WP-admin > WPClever > Order Tip to add Tips
 
 == Changelog ==
+
+= 3.1.2 =
+* Updated: Optimized the code
+* Updated: Compatible with WP 6.7 & Woo 9.5
 
 = 3.1.1 =
 * Updated: Optimized the code

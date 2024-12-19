@@ -13,6 +13,7 @@ class Wpcot_Backend {
 	}
 
 	public function __construct() {
+		add_action( 'init', [ $this, 'init' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 
 		// Settings
@@ -25,6 +26,11 @@ class Wpcot_Backend {
 
 		// AJAX
 		add_action( 'wp_ajax_wpcot_add_tip', [ $this, 'ajax_add_tip' ] );
+	}
+
+	public function init() {
+		// load text-domain
+		load_plugin_textdomain( 'wpc-order-tip', false, basename( WPCOT_DIR ) . '/languages/' );
 	}
 
 	public function enqueue_scripts( $hook ) {
