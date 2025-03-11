@@ -14,18 +14,18 @@
     });
   });
 
-  $('body').on('click touch', '.wpcot-tip-value', function(e) {
+  $('body').on('click touch touchstart', '.wpcot-tip-value', function(e) {
     e.preventDefault();
     apply_tip($(this));
   });
 
-  $('body').on('click touch', '.wpcot-tip-value-custom', function(e) {
+  $('body').on('click touch touchstart', '.wpcot-tip-value-custom', function(e) {
     e.preventDefault();
 
     $(this).closest('.wpcot-tip').find('.wpcot-tip-custom').slideToggle();
   });
 
-  $('body').on('click touch', '.wpcot-tip-custom-add', function(e) {
+  $('body').on('click touch touchstart', '.wpcot-tip-custom-add', function(e) {
     e.preventDefault();
 
     var $this = $(this);
