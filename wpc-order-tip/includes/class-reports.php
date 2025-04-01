@@ -46,30 +46,35 @@ class Wpcot_Reports {
 		$to       = date( 'Y-m-d' );
 		$from     = date( 'Y-m-d', strtotime( '-30 days' ) );
 		$ids      = [];
+		$status   = 'all';
 		$statuses = $this->get_order_statuses();
 
-		$orders = new WP_Query( [
-			'post_type'      => 'shop_order',
-			'posts_per_page' => 9999,
-			'orderby'        => 'date',
-			'order'          => 'DESC',
-			'post_status'    => $statuses ?: [ 'wc-completed' ],
-			'date_query'     => [
+		$query = new WC_Order_Query( apply_filters( 'wpcot_order_query_args', [
+			'limit'       => - 1,
+			'status'      => [ 'completed', 'processing', 'on-hold', 'cancelled' ],
+			'post_status' => $statuses ?: [ 'wc-completed' ],
+			'orderby'     => 'date',
+			'order'       => 'DESC',
+			'date_query'  => [
 				[
 					'after'     => [
-						'year'  => date( 'Y', strtotime( '-30 days' ) ),
-						'month' => date( 'm', strtotime( '-30 days' ) ),
-						'day'   => date( 'd', strtotime( '-30 days' ) )
+						'year'  => date( 'Y', strtotime( $from ) ),
+						'month' => date( 'm', strtotime( $from ) ),
+						'day'   => date( 'd', strtotime( $from ) )
+					],
+					'before'    => [
+						'year'  => date( 'Y', strtotime( $to ) ),
+						'month' => date( 'm', strtotime( $to ) ),
+						'day'   => date( 'd', strtotime( $to ) )
 					],
 					'inclusive' => true
 				],
 			]
-		] );
+		], $names, $from, $to, $status ) );
 
-		if ( $orders->post_count ) {
-			foreach ( $orders->posts as $order ) {
+		if ( $orders = $query->get_orders() ) {
+			foreach ( $orders as $order ) {
 				$has_tip   = false;
-				$order     = wc_get_order( $order->ID );
 				$fees      = $order->get_fees();
 				$tip_total = 0;
 				$tip_names = [];
@@ -155,20 +160,20 @@ class Wpcot_Reports {
 
 	function get_filtered_data( $names, $from, $to, $status ) {
 		if ( ! $from || ! $to ) {
-			return;
+			return null;
 		}
 
 		$errors   = $ids = [];
 		$names    = array_map( 'trim', (array) $names );
 		$statuses = $status == 'all' ? $this->get_order_statuses() : [ $status ];
 
-		$orders = new WP_Query( [
-			'post_type'      => 'shop_order',
-			'posts_per_page' => 9999,
-			'orderby'        => 'date',
-			'order'          => 'DESC',
-			'post_status'    => $statuses ?: [ 'wc-completed' ],
-			'date_query'     => [
+		$query = new WC_Order_Query( apply_filters( 'wpcot_order_query_args', [
+			'limit'       => - 1,
+			'status'      => [ 'completed', 'processing', 'on-hold', 'cancelled' ],
+			'post_status' => $statuses ?: [ 'wc-completed' ],
+			'orderby'     => 'date',
+			'order'       => 'DESC',
+			'date_query'  => [
 				[
 					'after'     => [
 						'year'  => date( 'Y', strtotime( $from ) ),
@@ -183,12 +188,11 @@ class Wpcot_Reports {
 					'inclusive' => true
 				],
 			]
-		] );
+		], $names, $from, $to, $status ) );
 
-		if ( $orders->post_count ) {
-			foreach ( $orders->posts as $order ) {
+		if ( $orders = $query->get_orders() ) {
+			foreach ( $orders as $order ) {
 				$has_tip   = false;
-				$order     = new WC_Order( $order->ID );
 				$fees      = $order->get_fees();
 				$tip_total = 0;
 				$tip_names = [];
@@ -268,13 +272,15 @@ class Wpcot_Reports {
 	}
 
 	function create_tips_csv_lines( $fp, $names, $from, $to, $status ) {
-		$orders = new WP_Query( [
-			'post_type'      => 'shop_order',
-			'posts_per_page' => 9999,
-			'post_status'    => [ $status ],
-			'orderby'        => 'date',
-			'order'          => 'DESC',
-			'date_query'     => [
+		$statuses = $status == 'all' ? $this->get_order_statuses() : [ $status ];
+
+		$query = new WC_Order_Query( apply_filters( 'wpcot_order_query_args', [
+			'limit'       => - 1,
+			'status'      => [ 'completed', 'processing', 'on-hold', 'cancelled' ],
+			'post_status' => $statuses ?: [ 'wc-completed' ],
+			'orderby'     => 'date',
+			'order'       => 'DESC',
+			'date_query'  => [
 				[
 					'after'     => [
 						'year'  => date( 'Y', strtotime( $from ) ),
@@ -289,16 +295,14 @@ class Wpcot_Reports {
 					'inclusive' => true
 				],
 			]
-		] );
+		], $names, $from, $to, $status ) );
 
-		if ( $orders->post_count ) {
+		if ( $orders = $query->get_orders() ) {
 			$total = 0;
 
-			foreach ( $orders->posts as $order ) {
+			foreach ( $orders as $order ) {
 				$has_tip   = false;
-				$order     = new WC_Order( $order->ID );
 				$fees      = $order->get_fees();
-				$status    = $order->get_status();
 				$tip_total = 0;
 				$tip_names = [];
 
@@ -341,13 +345,15 @@ class Wpcot_Reports {
                     <label for="wpcot-reports-from">
 						<?php esc_html_e( 'From', 'wpc-order-tip' ); ?>
                     </label>
-                    <input type="text" id="wpcot-reports-from" placeholder="Click to choose date" value="<?php echo date( 'Y-m-d', strtotime( '-30 days' ) ); ?>"/>
+                    <input type="text" id="wpcot-reports-from" placeholder="Click to choose date"
+                           value="<?php echo date( 'Y-m-d', strtotime( '-30 days' ) ); ?>"/>
                 </div>
                 <div class="wpcot-reports-col">
                     <label for="wpcot-reports-to">
 						<?php esc_html_e( 'To', 'wpc-order-tip' ); ?>
                     </label>
-                    <input type="text" id="wpcot-reports-to" placeholder="Click to choose date" value="<?php echo date( 'Y-m-d' ); ?>"/>
+                    <input type="text" id="wpcot-reports-to" placeholder="Click to choose date"
+                           value="<?php echo date( 'Y-m-d' ); ?>"/>
                 </div>
                 <div class="wpcot-reports-col">
                     <label for="wpcot-reports-status">
@@ -367,10 +373,12 @@ class Wpcot_Reports {
                     <label for="wpcot-reports-names">
 						<?php esc_html_e( 'Name(s)', 'wpc-order-tip' ); ?>
                     </label>
-                    <input type="text" id="wpcot-reports-names" placeholder="Name(s) to check, split by a comma" value="<?php echo implode( ', ', apply_filters( 'wpcot_default_tip_names', [ esc_html__( 'Tip', 'wpc-order-tip' ) ] ) ); ?>"/>
+                    <input type="text" id="wpcot-reports-names" placeholder="Name(s) to check, split by a comma"
+                           value="<?php echo implode( ', ', apply_filters( 'wpcot_default_tip_names', [ esc_html__( 'Tip', 'wpc-order-tip' ) ] ) ); ?>"/>
                 </div>
                 <div class="wpcot-reports-col">
-                    <button id="wpcot-reports-filter" class="button"><?php esc_html_e( 'Filter', 'wpc-order-tip' ); ?></button>
+                    <button id="wpcot-reports-filter"
+                            class="button"><?php esc_html_e( 'Filter', 'wpc-order-tip' ); ?></button>
                 </div>
             </div>
             <div id="wpcot-reports-error"></div>
@@ -395,7 +403,9 @@ class Wpcot_Reports {
 				'<span id="displaying-from">' . $from . '</span>',
 				'<span id="displaying-to">' . $to . '</span>'
 			); ?>
-            <a id="wpcot-export-csv" href="<?php echo esc_url( admin_url( 'admin.php?page=wc-reports&tab=wpcot&a=export&from=' . $from . '&to=' . $to . '&names=' . $names . '&status=' . $status ) ); ?>" class="button"><?php esc_html_e( 'Export to CSV', 'wpc-order-tip' ); ?></a>
+            <a id="wpcot-export-csv"
+               href="<?php echo esc_url( admin_url( 'admin.php?page=wc-reports&tab=wpcot&a=export&from=' . $from . '&to=' . $to . '&names=' . $names . '&status=' . $status ) ); ?>"
+               class="button"><?php esc_html_e( 'Export to CSV', 'wpc-order-tip' ); ?></a>
         </p>
         <table id="wpcot-reports-table" class="wp-list-table widefat fixed striped table-view-list pages">
             <thead>
@@ -419,7 +429,8 @@ class Wpcot_Reports {
 				?>
                 <tr>
                     <td>
-                        <a href="<?php echo esc_url( admin_url( 'post.php?post=' . $oi . '&action=edit' ) ); ?>" target="_blank"><?php echo esc_html( $oi ); ?></a>
+                        <a href="<?php echo esc_url( admin_url( 'post.php?post=' . $oi . '&action=edit' ) ); ?>"
+                           target="_blank"><?php echo esc_html( $oi ); ?></a>
                     </td>
                     <td>
 						<?php echo esc_html( wc_get_order_status_name( $status ) ); ?>
