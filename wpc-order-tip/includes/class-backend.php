@@ -71,16 +71,26 @@ class Wpcot_Backend {
 		$active_tab = sanitize_key( $_GET['tab'] ?? 'settings' );
 		?>
         <div class="wpclever_settings_page wrap">
-            <h1 class="wpclever_settings_page_title"><?php echo esc_html__( 'WPC Order Tip', 'wpc-order-tip' ) . ' ' . esc_html( WPCOT_VERSION ) . ' ' . ( defined( 'WPCOT_PREMIUM' ) ? '<span class="premium" style="display: none">' . esc_html__( 'Premium', 'wpc-order-tip' ) . '</span>' : '' ); ?></h1>
-            <div class="wpclever_settings_page_desc about-text">
-                <p>
-					<?php printf( /* translators: stars */ esc_html__( 'Thank you for using our plugin! If you are satisfied, please reward it a full five-star %s rating.', 'wpc-order-tip' ), '<span style="color:#ffb900">&#9733;&#9733;&#9733;&#9733;&#9733;</span>' ); ?>
-                    <br/>
-                    <a href="<?php echo esc_url( WPCOT_REVIEWS ); ?>" target="_blank"><?php esc_html_e( 'Reviews', 'wpc-order-tip' ); ?></a> |
-                    <a href="<?php echo esc_url( WPCOT_CHANGELOG ); ?>" target="_blank"><?php esc_html_e( 'Changelog', 'wpc-order-tip' ); ?></a> |
-                    <a href="<?php echo esc_url( WPCOT_DISCUSSION ); ?>" target="_blank"><?php esc_html_e( 'Discussion', 'wpc-order-tip' ); ?></a>
-                </p>
+            <div class="wpclever_settings_page_header">
+                <a class="wpclever_settings_page_header_logo" href="https://wpclever.net/"
+                   target="_blank" title="Visit wpclever.net"></a>
+                <div class="wpclever_settings_page_header_text">
+                    <div class="wpclever_settings_page_title"><?php echo esc_html__( 'WPC Order Tip', 'wpc-order-tip' ) . ' ' . esc_html( WPCOT_VERSION ) . ' ' . ( defined( 'WPCOT_PREMIUM' ) ? '<span class="premium" style="display: none">' . esc_html__( 'Premium', 'wpc-order-tip' ) . '</span>' : '' ); ?></div>
+                    <div class="wpclever_settings_page_desc about-text">
+                        <p>
+							<?php printf( /* translators: stars */ esc_html__( 'Thank you for using our plugin! If you are satisfied, please reward it a full five-star %s rating.', 'wpc-order-tip' ), '<span style="color:#ffb900">&#9733;&#9733;&#9733;&#9733;&#9733;</span>' ); ?>
+                            <br/>
+                            <a href="<?php echo esc_url( WPCOT_REVIEWS ); ?>"
+                               target="_blank"><?php esc_html_e( 'Reviews', 'wpc-order-tip' ); ?></a> |
+                            <a href="<?php echo esc_url( WPCOT_CHANGELOG ); ?>"
+                               target="_blank"><?php esc_html_e( 'Changelog', 'wpc-order-tip' ); ?></a> |
+                            <a href="<?php echo esc_url( WPCOT_DISCUSSION ); ?>"
+                               target="_blank"><?php esc_html_e( 'Discussion', 'wpc-order-tip' ); ?></a>
+                        </p>
+                    </div>
+                </div>
             </div>
+            <h2></h2>
 			<?php if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] ) { ?>
                 <div class="notice notice-success is-dismissible">
                     <p><?php esc_html_e( 'Settings updated.', 'wpc-order-tip' ); ?></p>
@@ -88,16 +98,21 @@ class Wpcot_Backend {
 			<?php } ?>
             <div class="wpclever_settings_page_nav">
                 <h2 class="nav-tab-wrapper">
-                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-wpcot&tab=settings' ) ); ?>" class="<?php echo esc_attr( $active_tab === 'settings' ? 'nav-tab nav-tab-active' : 'nav-tab' ); ?>">
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-wpcot&tab=settings' ) ); ?>"
+                       class="<?php echo esc_attr( $active_tab === 'settings' ? 'nav-tab nav-tab-active' : 'nav-tab' ); ?>">
 						<?php esc_html_e( 'Settings', 'wpc-order-tip' ); ?>
                     </a>
-                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-wpcot&tab=localization' ) ); ?>" class="<?php echo esc_attr( $active_tab === 'localization' ? 'nav-tab nav-tab-active' : 'nav-tab' ); ?>">
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-wpcot&tab=localization' ) ); ?>"
+                       class="<?php echo esc_attr( $active_tab === 'localization' ? 'nav-tab nav-tab-active' : 'nav-tab' ); ?>">
 						<?php esc_html_e( 'Localization', 'wpc-order-tip' ); ?>
                     </a>
-                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=wc-reports&tab=wpcot' ) ); ?>" class="<?php echo esc_attr( $active_tab === 'reports' ? 'nav-tab nav-tab-active' : 'nav-tab' ); ?>">
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=wc-reports&tab=wpcot' ) ); ?>"
+                       class="<?php echo esc_attr( $active_tab === 'reports' ? 'nav-tab nav-tab-active' : 'nav-tab' ); ?>">
 						<?php esc_html_e( 'Tip Reports', 'wpc-order-tip' ); ?>
                     </a>
-                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-wpcot&tab=premium' ) ); ?>" class="<?php echo esc_attr( $active_tab === 'premium' ? 'nav-tab nav-tab-active' : 'nav-tab' ); ?>" style="color: #c9356e">
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-wpcot&tab=premium' ) ); ?>"
+                       class="<?php echo esc_attr( $active_tab === 'premium' ? 'nav-tab nav-tab-active' : 'nav-tab' ); ?>"
+                       style="color: #c9356e">
 						<?php esc_html_e( 'Premium Version', 'wpc-order-tip' ); ?>
                     </a> <a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-kit' ) ); ?>" class="nav-tab">
 						<?php esc_html_e( 'Essential Kit', 'wpc-order-tip' ); ?>
@@ -175,7 +190,9 @@ class Wpcot_Backend {
                                 <td>
 									<?php $active_color_default = apply_filters( 'wpcot_active_color_default', '#cc99c2' ); ?>
                                     <label>
-                                        <input type="text" name="wpcot_settings[active_color]" class="wpcot_color_picker" value="<?php echo esc_attr( Wpcot_Helper()->get_setting( 'active_color', $active_color_default ) ); ?>"/>
+                                        <input type="text" name="wpcot_settings[active_color]"
+                                               class="wpcot_color_picker"
+                                               value="<?php echo esc_attr( Wpcot_Helper()->get_setting( 'active_color', $active_color_default ) ); ?>"/>
                                     </label>
                                     <span class="description"><?php printf( /* translators: color */ esc_html__( 'Choose the color for the active button, default %s', 'wpc-order-tip' ), '<code>' . $active_color_default . '</code>' ); ?></span>
                                 </td>
@@ -211,7 +228,8 @@ class Wpcot_Backend {
                                         </div>
                                     </div>
                                     <div class="wpcot-tips-new">
-                                        <input type="button" class="button wpcot-add-tip" value="<?php esc_attr_e( '+ Add tip', 'wpc-order-tip' ); ?>">
+                                        <input type="button" class="button wpcot-add-tip"
+                                               value="<?php esc_attr_e( '+ Add tip', 'wpc-order-tip' ); ?>">
                                     </div>
                                 </td>
                             </tr>
@@ -235,7 +253,9 @@ class Wpcot_Backend {
                                 <th><?php esc_html_e( 'No, Thanks!', 'wpc-order-tip' ); ?></th>
                                 <td>
                                     <label>
-                                        <input type="text" class="regular-text" name="wpcot_localization[no]" value="<?php echo esc_attr( Wpcot_Helper()->localization( 'no' ) ); ?>" placeholder="<?php esc_attr_e( 'No, Thanks!', 'wpc-order-tip' ); ?>"/>
+                                        <input type="text" class="regular-text" name="wpcot_localization[no]"
+                                               value="<?php echo esc_attr( Wpcot_Helper()->localization( 'no' ) ); ?>"
+                                               placeholder="<?php esc_attr_e( 'No, Thanks!', 'wpc-order-tip' ); ?>"/>
                                     </label>
                                 </td>
                             </tr>
@@ -243,7 +263,9 @@ class Wpcot_Backend {
                                 <th><?php esc_html_e( 'Other', 'wpc-order-tip' ); ?></th>
                                 <td>
                                     <label>
-                                        <input type="text" class="regular-text" name="wpcot_localization[other]" value="<?php echo esc_attr( Wpcot_Helper()->localization( 'other' ) ); ?>" placeholder="<?php esc_attr_e( 'Other', 'wpc-order-tip' ); ?>"/>
+                                        <input type="text" class="regular-text" name="wpcot_localization[other]"
+                                               value="<?php echo esc_attr( Wpcot_Helper()->localization( 'other' ) ); ?>"
+                                               placeholder="<?php esc_attr_e( 'Other', 'wpc-order-tip' ); ?>"/>
                                     </label>
                                 </td>
                             </tr>
@@ -251,7 +273,9 @@ class Wpcot_Backend {
                                 <th><?php esc_html_e( 'Add', 'wpc-order-tip' ); ?></th>
                                 <td>
                                     <label>
-                                        <input type="text" class="regular-text" name="wpcot_localization[add]" value="<?php echo esc_attr( Wpcot_Helper()->localization( 'add' ) ); ?>" placeholder="<?php esc_attr_e( 'Add', 'wpc-order-tip' ); ?>"/>
+                                        <input type="text" class="regular-text" name="wpcot_localization[add]"
+                                               value="<?php echo esc_attr( Wpcot_Helper()->localization( 'add' ) ); ?>"
+                                               placeholder="<?php esc_attr_e( 'Add', 'wpc-order-tip' ); ?>"/>
                                     </label>
                                 </td>
                             </tr>
@@ -265,7 +289,8 @@ class Wpcot_Backend {
 				<?php } elseif ( $active_tab == 'premium' ) { ?>
                     <div class="wpclever_settings_page_content_text">
                         <p>Get the Premium Version just $29!
-                            <a href="https://wpclever.net/downloads/wpc-order-tip/?utm_source=pro&utm_medium=wpcot&utm_campaign=wporg" target="_blank">https://wpclever.net/downloads/wpc-order-tip/</a>
+                            <a href="https://wpclever.net/downloads/wpc-order-tip/?utm_source=pro&utm_medium=wpcot&utm_campaign=wporg"
+                               target="_blank">https://wpclever.net/downloads/wpc-order-tip/</a>
                         </p>
                         <p><strong>Extra features for Premium Version:</strong></p>
                         <ul style="margin-bottom: 0">
@@ -283,12 +308,15 @@ class Wpcot_Backend {
                 <div class="wpclever_settings_page_suggestion_content">
                     <div>
                         To display custom engaging real-time messages on any wished positions, please install
-                        <a href="https://wordpress.org/plugins/wpc-smart-messages/" target="_blank">WPC Smart Messages</a> plugin. It's free!
+                        <a href="https://wordpress.org/plugins/wpc-smart-messages/" target="_blank">WPC Smart
+                            Messages</a> plugin. It's free!
                     </div>
                     <div>
                         Wanna save your precious time working on variations? Try our brand-new free plugin
-                        <a href="https://wordpress.org/plugins/wpc-variation-bulk-editor/" target="_blank">WPC Variation Bulk Editor</a> and
-                        <a href="https://wordpress.org/plugins/wpc-variation-duplicator/" target="_blank">WPC Variation Duplicator</a>.
+                        <a href="https://wordpress.org/plugins/wpc-variation-bulk-editor/" target="_blank">WPC Variation
+                            Bulk Editor</a> and
+                        <a href="https://wordpress.org/plugins/wpc-variation-duplicator/" target="_blank">WPC Variation
+                            Duplicator</a>.
                     </div>
                 </div>
             </div>
