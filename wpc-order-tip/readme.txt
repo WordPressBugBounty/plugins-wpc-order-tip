@@ -3,8 +3,8 @@ Contributors: wpclever
 Donate link: https://wpclever.net
 Tags: woocommerce, wpc, tip, tips, donations
 Tested up to: 6.8
-Version: 3.2.2
-Stable tag: 3.2.2
+Version: 3.2.4
+Stable tag: 3.2.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,9 +18,9 @@ WPC Order Tip for WooCommerce is a simple-to-use yet powerful plugin, which adds
 
 Visit our [live demo](https://demo.wpclever.net/wpcot/cart/?add-to-cart=23 "live demo") here to see how this plugin works.
 
-Users can set up multiple types of tip and donation options with predefined values (fixed amount or a percentage of the subtotal value) or custom amount with rules for min/max/step/default value (“Other” option). Customers can easily click on any option and the extra amount will be added to the subtotal automatically or subtly decline by choosing the “No, thanks” option.
+Users can set up multiple types of tip and donation options with predefined values (fixed amount or a percentage of the subtotal value) or custom amount with rules for min/max/step/default value (“Other” option). Customers can easily click on any option, and the extra amount will be added to the subtotal automatically or subtly decline by choosing the “No, thanks” option.
 
-These options will be displayed on the cart page so that before closing the deal and making the payment, buyers can consider showing their kindness and generosity with some tips or make some contributions to good causes. Knowing that their order could help others somehow boost the customers satisfaction and encourage people to make more referrals to the brand among their community.
+These options will be displayed on the cart page so that before closing the deal and making the payment, buyers can consider showing their kindness and generosity with some tips or make some contributions to good causes. Knowing that their order could help others somehow boosts the customers' satisfaction and encourages people to make more referrals to the brand among their community.
 
 = Benefits =
 
@@ -45,7 +45,7 @@ These options will be displayed on the cart page so that before closing the deal
 
 Users can either enter a number to set up a fixed amount or enter a percentage to imply a specific percentage of the subtotal value will be added. The field is so flexible that any of the two input types is applicable.
 
-To make sure customers won’t feel uncomfortable when their intended amount is different from predefined values, users can enable the Custom amount so that buyers can make their choices. They can still control the custom value by configuring the min/max/step and default value. This is the “Other” option which is often put last in the list of buttons. When customers click on it, the input field will be opened for them to choose the value then click Add to apply on the subtotal.
+To make sure customers won’t feel uncomfortable when their intended amount is different from predefined values, users can enable the Custom amount so that buyers can make their choices. They can still control the custom value by configuring the min/max/step and default value. This is the “Other” option which is often put last in the list of buttons. When customers click on it, the input field will be opened for them to choose the value, then click Add to apply on the subtotal.
 
 = Single or Multiple Sets of Options =
 
@@ -65,10 +65,18 @@ Please try other plugins from us:
 
 1. Please make sure that you installed WooCommerce
 2. Go to plugins in your dashboard and select "Add New"
-3. Search for "WPC Order Tip", Install & Activate it
+3. Search for "WPC Order Tip," Install & Activate it
 4. Go to WP-admin > WPClever > Order Tip to add Tips
 
 == Changelog ==
+
+= 3.2.4 =
+* Added: Import/export tips
+* Updated: Compatible with WP 6.8 & Woo 10.3
+
+= 3.2.3 =
+* Fixed: Minor CSS/JS issues in the backend
+* Updated: Compatible with WP 6.8 & Woo 10.2
 
 = 3.2.2 =
 * Updated: Optimized the code

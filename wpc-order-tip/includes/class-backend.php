@@ -2,74 +2,83 @@
 defined( 'ABSPATH' ) || exit;
 
 class Wpcot_Backend {
-	protected static $instance = null;
+    protected static $instance = null;
 
-	public static function instance() {
-		if ( is_null( self::$instance ) ) {
-			self::$instance = new self();
-		}
+    public static function instance() {
+        if ( is_null( self::$instance ) ) {
+            self::$instance = new self();
+        }
 
-		return self::$instance;
-	}
+        return self::$instance;
+    }
 
-	public function __construct() {
-		add_action( 'init', [ $this, 'init' ] );
-		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+    public function __construct() {
+        add_action( 'init', [ $this, 'init' ] );
+        add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 
-		// Settings
-		add_action( 'admin_init', [ $this, 'register_settings' ] );
-		add_action( 'admin_menu', [ $this, 'admin_menu' ] );
+        // Settings
+        add_action( 'admin_init', [ $this, 'register_settings' ] );
+        add_action( 'admin_menu', [ $this, 'admin_menu' ] );
 
-		// Links
-		add_filter( 'plugin_action_links', [ $this, 'action_links' ], 10, 2 );
-		add_filter( 'plugin_row_meta', [ $this, 'row_meta' ], 10, 2 );
+        // Links
+        add_filter( 'plugin_action_links', [ $this, 'action_links' ], 10, 2 );
+        add_filter( 'plugin_row_meta', [ $this, 'row_meta' ], 10, 2 );
 
-		// AJAX
-		add_action( 'wp_ajax_wpcot_add_tip', [ $this, 'ajax_add_tip' ] );
-	}
+        // AJAX
+        add_action( 'wp_ajax_wpcot_add_tip', [ $this, 'ajax_add_tip' ] );
+    }
 
-	public function init() {
-		// load text-domain
-		load_plugin_textdomain( 'wpc-order-tip', false, basename( WPCOT_DIR ) . '/languages/' );
-	}
+    public function init() {
+        // load text-domain
+        load_plugin_textdomain( 'wpc-order-tip', false, basename( WPCOT_DIR ) . '/languages/' );
+    }
 
-	public function enqueue_scripts( $hook ) {
-		if ( str_contains( $hook, 'wpcot' ) ) {
-			wp_enqueue_style( 'wp-color-picker' );
-			wp_enqueue_style( 'hint', WPCOT_URI . 'assets/css/hint.css' );
-			wp_enqueue_style( 'wpcot-backend', WPCOT_URI . 'assets/css/backend.css', [ 'woocommerce_admin_styles' ], WPCOT_VERSION );
-			wp_enqueue_script( 'wpcot-backend', WPCOT_URI . 'assets/js/backend.js', [
-				'jquery',
-				'wp-color-picker',
-				'jquery-ui-sortable',
-				'selectWoo',
-			], WPCOT_VERSION, true );
-			wp_localize_script( 'wpcot-backend', 'wpcot_vars', [
-				'hint_value'  => htmlentities( esc_attr__( 'Set a value using a number (eg. "10") or percentage (eg. "15%" of order subtotal)', 'wpc-order-tip' ) ),
-				'hint_remove' => esc_attr__( 'remove', 'wpc-order-tip' ),
-			] );
-		}
-	}
+    public function enqueue_scripts( $hook ) {
+        if ( str_contains( $hook, 'wpcot' ) ) {
+            wp_enqueue_style( 'wp-color-picker' );
+            wp_enqueue_style( 'hint', WPCOT_URI . 'assets/css/hint.css' );
+            wp_enqueue_style( 'wpcot-backend', WPCOT_URI . 'assets/css/backend.css', [ 'woocommerce_admin_styles' ], WPCOT_VERSION );
+            wp_enqueue_script( 'wpcot-backend', WPCOT_URI . 'assets/js/backend.js', [
+                    'jquery',
+                    'wp-color-picker',
+                    'jquery-ui-sortable',
+                    'selectWoo',
+            ], WPCOT_VERSION, true );
+            wp_localize_script( 'wpcot-backend', 'wpcot_vars', [
+                    'hint_value'  => htmlentities( esc_attr__( 'Set a value using a number (eg. "10") or percentage (eg. "15%" of order subtotal)', 'wpc-order-tip' ) ),
+                    'hint_remove' => esc_attr__( 'remove', 'wpc-order-tip' ),
+            ] );
+        }
+    }
 
-	function register_settings() {
-		// settings
-		register_setting( 'wpcot_settings', 'wpcot_tips' );
-		register_setting( 'wpcot_settings', 'wpcot_settings' );
+    function register_settings() {
+        // settings
+        register_setting( 'wpcot_settings', 'wpcot_tips', [
+                'type'              => 'array',
+                'sanitize_callback' => [ 'Wpcot_Helper', 'sanitize_array' ],
+        ] );
+        register_setting( 'wpcot_settings', 'wpcot_settings', [
+                'type'              => 'array',
+                'sanitize_callback' => [ 'Wpcot_Helper', 'sanitize_array' ],
+        ] );
 
-		// localization
-		register_setting( 'wpcot_localization', 'wpcot_localization' );
-	}
+        // localization
+        register_setting( 'wpcot_localization', 'wpcot_localization', [
+                'type'              => 'array',
+                'sanitize_callback' => [ 'Wpcot_Helper', 'sanitize_array' ],
+        ] );
+    }
 
-	public function admin_menu() {
-		add_submenu_page( 'wpclever', 'WPC Order Tip', 'Order Tip', 'manage_options', 'wpclever-wpcot', [
-			$this,
-			'admin_menu_content'
-		] );
-	}
+    public function admin_menu() {
+        add_submenu_page( 'wpclever', 'WPC Order Tip', 'Order Tip', 'manage_options', 'wpclever-wpcot', [
+                $this,
+                'admin_menu_content'
+        ] );
+    }
 
-	public function admin_menu_content() {
-		$active_tab = sanitize_key( $_GET['tab'] ?? 'settings' );
-		?>
+    public function admin_menu_content() {
+        $active_tab = sanitize_key( $_GET['tab'] ?? 'settings' );
+        ?>
         <div class="wpclever_settings_page wrap">
             <div class="wpclever_settings_page_header">
                 <a class="wpclever_settings_page_header_logo" href="https://wpclever.net/"
@@ -78,7 +87,7 @@ class Wpcot_Backend {
                     <div class="wpclever_settings_page_title"><?php echo esc_html__( 'WPC Order Tip', 'wpc-order-tip' ) . ' ' . esc_html( WPCOT_VERSION ) . ' ' . ( defined( 'WPCOT_PREMIUM' ) ? '<span class="premium" style="display: none">' . esc_html__( 'Premium', 'wpc-order-tip' ) . '</span>' : '' ); ?></div>
                     <div class="wpclever_settings_page_desc about-text">
                         <p>
-							<?php printf( /* translators: stars */ esc_html__( 'Thank you for using our plugin! If you are satisfied, please reward it a full five-star %s rating.', 'wpc-order-tip' ), '<span style="color:#ffb900">&#9733;&#9733;&#9733;&#9733;&#9733;</span>' ); ?>
+                            <?php printf( /* translators: stars */ esc_html__( 'Thank you for using our plugin! If you are satisfied, please reward it a full five-star %s rating.', 'wpc-order-tip' ), '<span style="color:#ffb900">&#9733;&#9733;&#9733;&#9733;&#9733;</span>' ); ?>
                             <br/>
                             <a href="<?php echo esc_url( WPCOT_REVIEWS ); ?>"
                                target="_blank"><?php esc_html_e( 'Reviews', 'wpc-order-tip' ); ?></a> |
@@ -91,42 +100,42 @@ class Wpcot_Backend {
                 </div>
             </div>
             <h2></h2>
-			<?php if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] ) { ?>
+            <?php if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] ) { ?>
                 <div class="notice notice-success is-dismissible">
                     <p><?php esc_html_e( 'Settings updated.', 'wpc-order-tip' ); ?></p>
                 </div>
-			<?php } ?>
+            <?php } ?>
             <div class="wpclever_settings_page_nav">
                 <h2 class="nav-tab-wrapper">
                     <a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-wpcot&tab=settings' ) ); ?>"
                        class="<?php echo esc_attr( $active_tab === 'settings' ? 'nav-tab nav-tab-active' : 'nav-tab' ); ?>">
-						<?php esc_html_e( 'Settings', 'wpc-order-tip' ); ?>
+                        <?php esc_html_e( 'Settings', 'wpc-order-tip' ); ?>
                     </a>
                     <a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-wpcot&tab=localization' ) ); ?>"
                        class="<?php echo esc_attr( $active_tab === 'localization' ? 'nav-tab nav-tab-active' : 'nav-tab' ); ?>">
-						<?php esc_html_e( 'Localization', 'wpc-order-tip' ); ?>
+                        <?php esc_html_e( 'Localization', 'wpc-order-tip' ); ?>
                     </a>
                     <a href="<?php echo esc_url( admin_url( 'admin.php?page=wc-reports&tab=wpcot' ) ); ?>"
                        class="<?php echo esc_attr( $active_tab === 'reports' ? 'nav-tab nav-tab-active' : 'nav-tab' ); ?>">
-						<?php esc_html_e( 'Tip Reports', 'wpc-order-tip' ); ?>
+                        <?php esc_html_e( 'Tip Reports', 'wpc-order-tip' ); ?>
                     </a>
                     <a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-wpcot&tab=premium' ) ); ?>"
                        class="<?php echo esc_attr( $active_tab === 'premium' ? 'nav-tab nav-tab-active' : 'nav-tab' ); ?>"
                        style="color: #c9356e">
-						<?php esc_html_e( 'Premium Version', 'wpc-order-tip' ); ?>
+                        <?php esc_html_e( 'Premium Version', 'wpc-order-tip' ); ?>
                     </a> <a href="<?php echo esc_url( admin_url( 'admin.php?page=wpclever-kit' ) ); ?>" class="nav-tab">
-						<?php esc_html_e( 'Essential Kit', 'wpc-order-tip' ); ?>
+                        <?php esc_html_e( 'Essential Kit', 'wpc-order-tip' ); ?>
                     </a>
                 </h2>
             </div>
             <div class="wpclever_settings_page_content">
-				<?php if ( $active_tab === 'settings' ) {
-					$click_again       = Wpcot_Helper()->get_setting( 'click_again', 'yes' );
-					$position_cart     = Wpcot_Helper()->get_setting( 'position_cart', 'before_totals' );
-					$position_checkout = Wpcot_Helper()->get_setting( 'position_checkout', 'before_order_review' );
-					$no_btn_position   = Wpcot_Helper()->get_setting( 'no_btn_position', 'first' );
-					$btn_style         = Wpcot_Helper()->get_setting( 'btn_style', 'square' );
-					?>
+                <?php if ( $active_tab === 'settings' ) {
+                    $click_again       = Wpcot_Helper()->get_setting( 'click_again', 'yes' );
+                    $position_cart     = Wpcot_Helper()->get_setting( 'position_cart', 'before_totals' );
+                    $position_checkout = Wpcot_Helper()->get_setting( 'position_checkout', 'before_order_review' );
+                    $no_btn_position   = Wpcot_Helper()->get_setting( 'no_btn_position', 'first' );
+                    $btn_style         = Wpcot_Helper()->get_setting( 'btn_style', 'square' );
+                    ?>
                     <form method="post" action="options.php">
                         <table class="form-table">
                             <tr>
@@ -188,7 +197,7 @@ class Wpcot_Backend {
                             <tr>
                                 <th><?php esc_html_e( 'Active button color', 'wpc-order-tip' ); ?></th>
                                 <td>
-									<?php $active_color_default = apply_filters( 'wpcot_active_color_default', '#cc99c2' ); ?>
+                                    <?php $active_color_default = apply_filters( 'wpcot_active_color_default', '#cc99c2' ); ?>
                                     <label>
                                         <input type="text" name="wpcot_settings[active_color]"
                                                class="wpcot_color_picker"
@@ -198,33 +207,38 @@ class Wpcot_Backend {
                                 </td>
                             </tr>
                             <tr>
-                                <th><?php esc_html_e( 'Tips', 'wpc-order-tip' ); ?></th>
+                                <th>
+                                    <?php esc_html_e( 'Tips', 'wpc-order-tip' ); ?>
+                                    <a style="display: none;" class="wpclever_export" data-key="wpcot_tips"
+                                       data-name="tips"
+                                       href="#"><?php esc_html_e( 'import / export', 'wpc-order-tip' ); ?></a>
+                                </th>
                                 <td>
                                     <div class="wpcot-tips-wrapper">
                                         <div class="wpcot-tips wpcot-tips">
-											<?php
-											$tips = Wpcot_Helper()->get_tips();
+                                            <?php
+                                            $tips = Wpcot_Helper()->get_tips();
 
-											if ( empty( $tips ) ) {
-												$key    = Wpcot_Helper()->generate_key();
-												$active = true;
-												$tip    = [];
-												include WPCOT_DIR . 'includes/templates/tip.php';
-											} else {
-												$i = 0;
+                                            if ( empty( $tips ) ) {
+                                                $key    = Wpcot_Helper()->generate_key();
+                                                $active = true;
+                                                $tip    = [];
+                                                include WPCOT_DIR . 'includes/templates/tip.php';
+                                            } else {
+                                                $i = 0;
 
-												foreach ( $tips as $key => $tip ) {
-													if ( $i === 0 ) {
-														$active = true;
-													} else {
-														$active = false;
-													}
+                                                foreach ( $tips as $key => $tip ) {
+                                                    if ( $i === 0 ) {
+                                                        $active = true;
+                                                    } else {
+                                                        $active = false;
+                                                    }
 
-													include WPCOT_DIR . 'includes/templates/tip.php';
-													$i ++;
-												}
-											}
-											?>
+                                                    include WPCOT_DIR . 'includes/templates/tip.php';
+                                                    $i ++;
+                                                }
+                                            }
+                                            ?>
                                         </div>
                                     </div>
                                     <div class="wpcot-tips-new">
@@ -235,18 +249,18 @@ class Wpcot_Backend {
                             </tr>
                             <tr class="submit">
                                 <th colspan="2">
-									<?php settings_fields( 'wpcot_settings' ); ?><?php submit_button(); ?>
+                                    <?php settings_fields( 'wpcot_settings' ); ?><?php submit_button(); ?>
                                 </th>
                             </tr>
                         </table>
                     </form>
-				<?php } elseif ( $active_tab === 'localization' ) { ?>
+                <?php } elseif ( $active_tab === 'localization' ) { ?>
                     <form method="post" action="options.php">
                         <table class="form-table">
                             <tr class="heading">
                                 <th scope="row"><?php esc_html_e( 'Localization', 'wpc-order-tip' ); ?></th>
                                 <td>
-									<?php esc_html_e( 'Leave blank to use the default text and its equivalent translation in multiple languages.', 'wpc-order-tip' ); ?>
+                                    <?php esc_html_e( 'Leave blank to use the default text and its equivalent translation in multiple languages.', 'wpc-order-tip' ); ?>
                                 </td>
                             </tr>
                             <tr>
@@ -281,12 +295,12 @@ class Wpcot_Backend {
                             </tr>
                             <tr class="submit">
                                 <th colspan="2">
-									<?php settings_fields( 'wpcot_localization' ); ?><?php submit_button(); ?>
+                                    <?php settings_fields( 'wpcot_localization' ); ?><?php submit_button(); ?>
                                 </th>
                             </tr>
                         </table>
                     </form>
-				<?php } elseif ( $active_tab == 'premium' ) { ?>
+                <?php } elseif ( $active_tab == 'premium' ) { ?>
                     <div class="wpclever_settings_page_content_text">
                         <p>Get the Premium Version just $29!
                             <a href="https://wpclever.net/downloads/wpc-order-tip/?utm_source=pro&utm_medium=wpcot&utm_campaign=wporg"
@@ -299,7 +313,7 @@ class Wpcot_Backend {
                             <li>- Get the lifetime update & premium support.</li>
                         </ul>
                     </div>
-				<?php } ?>
+                <?php } ?>
             </div><!-- /.wpclever_settings_page_content -->
             <div class="wpclever_settings_page_suggestion">
                 <div class="wpclever_settings_page_suggestion_label">
@@ -321,51 +335,51 @@ class Wpcot_Backend {
                 </div>
             </div>
         </div>
-		<?php
-	}
+        <?php
+    }
 
-	function action_links( $links, $file ) {
-		static $plugin;
+    function action_links( $links, $file ) {
+        static $plugin;
 
-		if ( ! isset( $plugin ) ) {
-			$plugin = plugin_basename( WPCOT_FILE );
-		}
+        if ( ! isset( $plugin ) ) {
+            $plugin = plugin_basename( WPCOT_FILE );
+        }
 
-		if ( $plugin === $file ) {
-			$settings             = '<a href="' . esc_url( admin_url( 'admin.php?page=wpclever-wpcot&tab=settings' ) ) . '">' . esc_html__( 'Settings', 'wpc-order-tip' ) . '</a>';
-			$links['wpc-premium'] = '<a href="' . esc_url( admin_url( 'admin.php?page=wpclever-wpcot&tab=premium' ) ) . '" style="color: #c9356e">' . esc_html__( 'Premium Version', 'wpc-order-tip' ) . '</a>';
-			array_unshift( $links, $settings );
-		}
+        if ( $plugin === $file ) {
+            $settings             = '<a href="' . esc_url( admin_url( 'admin.php?page=wpclever-wpcot&tab=settings' ) ) . '">' . esc_html__( 'Settings', 'wpc-order-tip' ) . '</a>';
+            $links['wpc-premium'] = '<a href="' . esc_url( admin_url( 'admin.php?page=wpclever-wpcot&tab=premium' ) ) . '" style="color: #c9356e">' . esc_html__( 'Premium Version', 'wpc-order-tip' ) . '</a>';
+            array_unshift( $links, $settings );
+        }
 
-		return (array) $links;
-	}
+        return (array) $links;
+    }
 
-	function row_meta( $links, $file ) {
-		static $plugin;
+    function row_meta( $links, $file ) {
+        static $plugin;
 
-		if ( ! isset( $plugin ) ) {
-			$plugin = plugin_basename( WPCOT_FILE );
-		}
+        if ( ! isset( $plugin ) ) {
+            $plugin = plugin_basename( WPCOT_FILE );
+        }
 
-		if ( $plugin === $file ) {
-			$row_meta = [
-				'support' => '<a href="' . esc_url( WPCOT_DISCUSSION ) . '" target="_blank">' . esc_html__( 'Community support', 'wpc-order-tip' ) . '</a>',
-			];
+        if ( $plugin === $file ) {
+            $row_meta = [
+                    'support' => '<a href="' . esc_url( WPCOT_DISCUSSION ) . '" target="_blank">' . esc_html__( 'Community support', 'wpc-order-tip' ) . '</a>',
+            ];
 
-			return array_merge( $links, $row_meta );
-		}
+            return array_merge( $links, $row_meta );
+        }
 
-		return (array) $links;
-	}
+        return (array) $links;
+    }
 
-	public function ajax_add_tip() {
-		$key    = Wpcot_Helper()->generate_key();
-		$active = true;
-		$tip    = [];
-		include WPCOT_DIR . 'includes/templates/tip.php';
+    public function ajax_add_tip() {
+        $key    = Wpcot_Helper()->generate_key();
+        $active = true;
+        $tip    = [];
+        include WPCOT_DIR . 'includes/templates/tip.php';
 
-		wp_die();
-	}
+        wp_die();
+    }
 }
 
 return Wpcot_Backend::instance();
