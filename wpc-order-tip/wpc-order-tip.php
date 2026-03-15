@@ -3,21 +3,21 @@
 Plugin Name: WPC Order Tip for WooCommerce
 Plugin URI: https://wpclever.net/
 Description: WPC Order Tip is a plugin that enables customers to add extra amounts to their order as a tip or donation to the seller or specified recipients.
-Version: 3.2.4
+Version: 3.2.5
 Author: WPClever
 Author URI: https://wpclever.net
 Text Domain: wpc-order-tip
 Domain Path: /languages/
 Requires Plugins: woocommerce
 Requires at least: 4.0
-Tested up to: 6.8
+Tested up to: 6.9
 WC requires at least: 3.0
-WC tested up to: 10.3
+WC tested up to: 10.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
 
-! defined( 'WPCOT_VERSION' ) && define( 'WPCOT_VERSION', '3.2.4' );
+! defined( 'WPCOT_VERSION' ) && define( 'WPCOT_VERSION', '3.2.5' );
 ! defined( 'WPCOT_LITE' ) && define( 'WPCOT_LITE', __FILE__ );
 ! defined( 'WPCOT_FILE' ) && define( 'WPCOT_FILE', __FILE__ );
 ! defined( 'WPCOT_URI' ) && define( 'WPCOT_URI', plugin_dir_url( __FILE__ ) );
@@ -28,6 +28,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 ! defined( 'WPCOT_DISCUSSION' ) && define( 'WPCOT_DISCUSSION', 'https://wordpress.org/support/plugin/wpc-order-tip' );
 ! defined( 'WPC_URI' ) && define( 'WPC_URI', WPCOT_URI );
 
+include 'includes/log/wpc-log.php';
 include 'includes/dashboard/wpc-dashboard.php';
 include 'includes/kit/wpc-kit.php';
 include 'includes/hpos.php';

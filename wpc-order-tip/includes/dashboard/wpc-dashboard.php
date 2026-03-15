@@ -1,16 +1,6 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-if ( ! class_exists( 'WPCleverMenu' ) ) {
-    class WPCleverMenu {
-        function __construct() {
-            // do nothing, moved to WPCleverDashboard
-        }
-    }
-
-    new WPCleverMenu();
-}
-
 if ( ! class_exists( 'WPCleverDashboard' ) ) {
     class WPCleverDashboard {
         function __construct() {
@@ -231,6 +221,9 @@ if ( ! class_exists( 'WPCleverDashboard' ) ) {
             $name = sanitize_text_field( wp_unslash( $_POST['name'] ?? 'settings' ) );
 
             if ( ! empty( $key ) && ( $settings = get_option( $key ) ) ) {
+                unset( $settings['_last_saved'] );
+                unset( $settings['_last_saved_by'] );
+
                 echo '<textarea class="wpclever_export_data" id="wpclever_export_data" style="width: 100%; height: 200px; margin-bottom: 10px;" data-key="' . esc_attr( $key ) . '">' . esc_textarea( wp_json_encode( $settings, JSON_PRETTY_PRINT ) ) . '</textarea>';
                 echo '<div style="display: flex; align-items: center"><button class="button button-primary wpclever_import" data-key="' . esc_attr( $key ) . '">Update</button>';
                 echo '<span style="color: #ff4f3b; font-size: 10px; margin-left: 10px">' . sprintf( '* Current %s will be replaced after pressing Update!', esc_html( $name ) ) . '</span>';
@@ -263,4 +256,37 @@ if ( ! class_exists( 'WPCleverDashboard' ) ) {
     }
 
     new WPCleverDashboard();
+}
+
+if ( ! function_exists( 'wpc_last_saved' ) ) {
+    function wpc_last_saved( $settings ) {
+        $last_saved = isset( $settings['_last_saved'] ) ? (int) $settings['_last_saved'] : 0;
+
+        if ( $last_saved ) {
+            $time_diff = human_time_diff( $last_saved, current_time( 'timestamp' ) );
+            $time_full = date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $last_saved );
+
+            // Who saved it
+            $saved_by_id   = isset( $settings['_last_saved_by'] ) ? (int) $settings['_last_saved_by'] : 0;
+            $saved_by_name = '';
+
+            if ( $saved_by_id ) {
+                $user = get_userdata( $saved_by_id );
+
+                if ( $user ) {
+                    $saved_by_name = $user->display_name;
+                }
+            }
+
+            $by_text = $saved_by_name ? ' ' . sprintf( 'by %s', esc_html( $saved_by_name ) ) : '';
+
+            echo '<span class="wpc-last-saved" title="' . esc_attr( $time_full ) . '"><span class="dashicons dashicons-saved"></span> '
+                 . sprintf(
+                         'Saved %1$s ago',
+                         esc_html( $time_diff )
+                 )
+                 . $by_text
+                 . '</span>';
+        }
+    }
 }

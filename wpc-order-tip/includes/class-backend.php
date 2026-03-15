@@ -18,6 +18,7 @@ class Wpcot_Backend {
 
         // Settings
         add_action( 'admin_init', [ $this, 'register_settings' ] );
+        add_filter( 'pre_update_option', [ $this, 'last_saved' ], 10, 2 );
         add_action( 'admin_menu', [ $this, 'admin_menu' ] );
 
         // Links
@@ -53,11 +54,13 @@ class Wpcot_Backend {
 
     function register_settings() {
         // settings
-        register_setting( 'wpcot_settings', 'wpcot_tips', [
+        register_setting( 'wpcot_settings', 'wpcot_settings', [
                 'type'              => 'array',
                 'sanitize_callback' => [ 'Wpcot_Helper', 'sanitize_array' ],
         ] );
-        register_setting( 'wpcot_settings', 'wpcot_settings', [
+
+        // tips
+        register_setting( 'wpcot_settings', 'wpcot_tips', [
                 'type'              => 'array',
                 'sanitize_callback' => [ 'Wpcot_Helper', 'sanitize_array' ],
         ] );
@@ -67,6 +70,15 @@ class Wpcot_Backend {
                 'type'              => 'array',
                 'sanitize_callback' => [ 'Wpcot_Helper', 'sanitize_array' ],
         ] );
+    }
+
+    function last_saved( $value, $option ) {
+        if ( $option == 'wpcot_settings' || $option == 'wpcot_localization' ) {
+            $value['_last_saved']    = current_time( 'timestamp' );
+            $value['_last_saved_by'] = get_current_user_id();
+        }
+
+        return $value;
     }
 
     public function admin_menu() {
@@ -249,7 +261,16 @@ class Wpcot_Backend {
                             </tr>
                             <tr class="submit">
                                 <th colspan="2">
-                                    <?php settings_fields( 'wpcot_settings' ); ?><?php submit_button(); ?>
+                                    <div class="wpclever_submit">
+                                        <?php
+                                        settings_fields( 'wpcot_settings' );
+                                        submit_button( '', 'primary', 'submit', false );
+
+                                        if ( function_exists( 'wpc_last_saved' ) ) {
+                                            wpc_last_saved( Wpcot_Helper()->get_settings() );
+                                        }
+                                        ?>
+                                    </div>
                                 </th>
                             </tr>
                         </table>

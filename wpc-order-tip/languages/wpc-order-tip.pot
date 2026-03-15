@@ -1,15 +1,15 @@
-# Copyright (C) 2025 WPClever
+# Copyright (C) 2026 WPClever
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: WPC Order Tip for WooCommerce 3.2.4\n"
+"Project-Id-Version: WPC Order Tip for WooCommerce 3.2.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wpc-order-tip\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-11-26T08:53:10+00:00\n"
+"POT-Creation-Date: 2026-03-15T04:35:15+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: wpc-order-tip\n"
@@ -39,217 +39,217 @@ msgstr ""
 msgid "https://wpclever.net"
 msgstr ""
 
-#: includes/class-backend.php:48
+#: includes/class-backend.php:49
 #: includes/templates/tip.php:64
 msgid "Set a value using a number (eg. \"10\") or percentage (eg. \"15%\" of order subtotal)"
 msgstr ""
 
-#: includes/class-backend.php:49
+#: includes/class-backend.php:50
 #: includes/templates/tip.php:30
 #: includes/templates/tip.php:69
 msgid "remove"
 msgstr ""
 
-#: includes/class-backend.php:87
+#: includes/class-backend.php:99
 msgid "WPC Order Tip"
 msgstr ""
 
-#: includes/class-backend.php:87
+#: includes/class-backend.php:99
 msgid "Premium"
 msgstr ""
 
 #. translators: stars
-#: includes/class-backend.php:90
+#: includes/class-backend.php:102
 #, php-format
 msgid "Thank you for using our plugin! If you are satisfied, please reward it a full five-star %s rating."
 msgstr ""
 
-#: includes/class-backend.php:93
+#: includes/class-backend.php:105
 msgid "Reviews"
 msgstr ""
 
-#: includes/class-backend.php:95
+#: includes/class-backend.php:107
 msgid "Changelog"
 msgstr ""
 
-#: includes/class-backend.php:97
+#: includes/class-backend.php:109
 msgid "Discussion"
 msgstr ""
 
-#: includes/class-backend.php:105
+#: includes/class-backend.php:117
 msgid "Settings updated."
 msgstr ""
 
-#: includes/class-backend.php:112
-#: includes/class-backend.php:349
+#: includes/class-backend.php:124
+#: includes/class-backend.php:370
 msgid "Settings"
 msgstr ""
 
-#: includes/class-backend.php:116
-#: includes/class-backend.php:261
+#: includes/class-backend.php:128
+#: includes/class-backend.php:282
 msgid "Localization"
 msgstr ""
 
-#: includes/class-backend.php:120
+#: includes/class-backend.php:132
 msgid "Tip Reports"
 msgstr ""
 
-#: includes/class-backend.php:125
-#: includes/class-backend.php:350
+#: includes/class-backend.php:137
+#: includes/class-backend.php:371
 msgid "Premium Version"
 msgstr ""
 
-#: includes/class-backend.php:127
+#: includes/class-backend.php:139
 msgid "Essential Kit"
 msgstr ""
 
-#: includes/class-backend.php:142
+#: includes/class-backend.php:154
 msgid "Position on cart page"
 msgstr ""
 
-#: includes/class-backend.php:145
+#: includes/class-backend.php:157
 msgid "Before cart"
 msgstr ""
 
-#: includes/class-backend.php:146
+#: includes/class-backend.php:158
 msgid "After coupon"
 msgstr ""
 
-#: includes/class-backend.php:147
+#: includes/class-backend.php:159
 msgid "Before totals"
 msgstr ""
 
-#: includes/class-backend.php:148
+#: includes/class-backend.php:160
 msgid "After cart"
 msgstr ""
 
-#: includes/class-backend.php:149
-#: includes/class-backend.php:163
+#: includes/class-backend.php:161
+#: includes/class-backend.php:175
 msgid "None (hide it)"
 msgstr ""
 
-#: includes/class-backend.php:151
-#: includes/class-backend.php:165
+#: includes/class-backend.php:163
+#: includes/class-backend.php:177
 msgid "You also can use shortcode [wpcot] to place it where you want."
 msgstr ""
 
-#: includes/class-backend.php:155
+#: includes/class-backend.php:167
 msgid "Position on checkout page"
 msgstr ""
 
-#: includes/class-backend.php:158
+#: includes/class-backend.php:170
 msgid "Before checkout form"
 msgstr ""
 
-#: includes/class-backend.php:159
+#: includes/class-backend.php:171
 msgid "Before order details"
 msgstr ""
 
-#: includes/class-backend.php:160
+#: includes/class-backend.php:172
 msgid "After customer details"
 msgstr ""
 
-#: includes/class-backend.php:161
+#: includes/class-backend.php:173
 msgid "Before order review"
 msgstr ""
 
-#: includes/class-backend.php:162
+#: includes/class-backend.php:174
 msgid "After checkout form"
 msgstr ""
 
-#: includes/class-backend.php:169
+#: includes/class-backend.php:181
 msgid "\"No, Thanks!\" button position"
 msgstr ""
 
-#: includes/class-backend.php:172
+#: includes/class-backend.php:184
 msgid "First"
 msgstr ""
 
-#: includes/class-backend.php:173
+#: includes/class-backend.php:185
 msgid "Last"
 msgstr ""
 
-#: includes/class-backend.php:174
+#: includes/class-backend.php:186
 msgid "Before \"Other\" button"
 msgstr ""
 
-#: includes/class-backend.php:179
+#: includes/class-backend.php:191
 msgid "Remove when clicking again"
 msgstr ""
 
-#: includes/class-backend.php:182
+#: includes/class-backend.php:194
 #: includes/templates/tip.php:98
 #: includes/templates/tip.php:127
 msgid "Yes"
 msgstr ""
 
-#: includes/class-backend.php:183
+#: includes/class-backend.php:195
 #: includes/templates/tip.php:97
 #: includes/templates/tip.php:126
 msgid "No"
 msgstr ""
 
-#: includes/class-backend.php:185
+#: includes/class-backend.php:197
 msgid "Do you want to remove when clicking on an active tip?"
 msgstr ""
 
-#: includes/class-backend.php:189
+#: includes/class-backend.php:201
 msgid "Button style"
 msgstr ""
 
-#: includes/class-backend.php:192
+#: includes/class-backend.php:204
 msgid "Square"
 msgstr ""
 
-#: includes/class-backend.php:193
+#: includes/class-backend.php:205
 msgid "Rounded"
 msgstr ""
 
-#: includes/class-backend.php:198
+#: includes/class-backend.php:210
 msgid "Active button color"
 msgstr ""
 
 #. translators: color
-#: includes/class-backend.php:206
+#: includes/class-backend.php:218
 #, php-format
 msgid "Choose the color for the active button, default %s"
 msgstr ""
 
-#: includes/class-backend.php:211
+#: includes/class-backend.php:223
 msgid "Tips"
 msgstr ""
 
-#: includes/class-backend.php:214
+#: includes/class-backend.php:226
 msgid "import / export"
 msgstr ""
 
-#: includes/class-backend.php:246
+#: includes/class-backend.php:258
 msgid "+ Add tip"
 msgstr ""
 
-#: includes/class-backend.php:263
+#: includes/class-backend.php:284
 msgid "Leave blank to use the default text and its equivalent translation in multiple languages."
 msgstr ""
 
-#: includes/class-backend.php:267
-#: includes/class-backend.php:272
+#: includes/class-backend.php:288
+#: includes/class-backend.php:293
 #: includes/class-frontend.php:126
 msgid "No, Thanks!"
 msgstr ""
 
-#: includes/class-backend.php:277
-#: includes/class-backend.php:282
+#: includes/class-backend.php:298
+#: includes/class-backend.php:303
 #: includes/class-frontend.php:167
 msgid "Other"
 msgstr ""
 
-#: includes/class-backend.php:287
-#: includes/class-backend.php:292
+#: includes/class-backend.php:308
+#: includes/class-backend.php:313
 #: includes/class-frontend.php:179
 msgid "Add"
 msgstr ""
 
-#: includes/class-backend.php:366
+#: includes/class-backend.php:387
 msgid "Community support"
 msgstr ""
 
