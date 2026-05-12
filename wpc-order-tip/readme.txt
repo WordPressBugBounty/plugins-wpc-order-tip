@@ -3,8 +3,8 @@ Contributors: wpclever
 Donate link: https://wpclever.net
 Tags: woocommerce, wpc, tip, tips, donations
 Tested up to: 6.9
-Version: 3.2.5
-Stable tag: 3.2.5
+Version: 3.2.6
+Stable tag: 3.2.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -69,6 +69,9 @@ Please try other plugins from us:
 4. Go to WP-admin > WPClever > Order Tip to add Tips
 
 == Changelog ==
+
+= 3.2.6 =
+* Added: Option to round the tip amount when calculated by percentage
 
 = 3.2.5 =
 * Fixed: Minor CSS/JS issues in the backend

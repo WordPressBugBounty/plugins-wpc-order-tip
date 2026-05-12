@@ -301,6 +301,11 @@ class Wpcot_Frontend {
 						if ( str_contains( $value, '%' ) ) {
 							$subtotal = apply_filters( 'wpcot_cart_subtotal', WC()->cart->get_subtotal() );
 							$amount   = ( (float) $value / 100 ) * $subtotal;
+
+							// Round the tip amount if the setting is enabled
+							if ( Wpcot_Helper()->get_setting( 'round_tip', 'no' ) === 'yes' ) {
+								$amount = round( $amount );
+							}
 						} else {
 							$amount = (float) $value;
 						}

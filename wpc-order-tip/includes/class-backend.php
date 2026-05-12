@@ -147,6 +147,7 @@ class Wpcot_Backend {
                     $position_checkout = Wpcot_Helper()->get_setting( 'position_checkout', 'before_order_review' );
                     $no_btn_position   = Wpcot_Helper()->get_setting( 'no_btn_position', 'first' );
                     $btn_style         = Wpcot_Helper()->get_setting( 'btn_style', 'square' );
+                    $round_tip         = Wpcot_Helper()->get_setting( 'round_tip', 'no' );
                     ?>
                     <form method="post" action="options.php">
                         <table class="form-table">
@@ -216,6 +217,16 @@ class Wpcot_Backend {
                                                value="<?php echo esc_attr( Wpcot_Helper()->get_setting( 'active_color', $active_color_default ) ); ?>"/>
                                     </label>
                                     <span class="description"><?php printf( /* translators: color */ esc_html__( 'Choose the color for the active button, default %s', 'wpc-order-tip' ), '<code>' . $active_color_default . '</code>' ); ?></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><?php esc_html_e( 'Round tip amount', 'wpc-order-tip' ); ?></th>
+                                <td>
+                                    <label> <select name="wpcot_settings[round_tip]">
+                                            <option value="yes" <?php selected( $round_tip, 'yes' ); ?>><?php esc_html_e( 'Yes', 'wpc-order-tip' ); ?></option>
+                                            <option value="no" <?php selected( $round_tip, 'no' ); ?>><?php esc_html_e( 'No', 'wpc-order-tip' ); ?></option>
+                                        </select> </label>
+                                    <span class="description"><?php esc_html_e( 'Do you want to round the tip amount when calculated by percentage?', 'wpc-order-tip' ); ?></span>
                                 </td>
                             </tr>
                             <tr>
