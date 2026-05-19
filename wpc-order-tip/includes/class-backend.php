@@ -148,6 +148,11 @@ class Wpcot_Backend {
                     $no_btn_position   = Wpcot_Helper()->get_setting( 'no_btn_position', 'first' );
                     $btn_style         = Wpcot_Helper()->get_setting( 'btn_style', 'square' );
                     $round_tip         = Wpcot_Helper()->get_setting( 'round_tip', 'no' );
+
+                    // backward compatibility: 'yes' from previous version maps to 'before_tax'
+                    if ( $round_tip === 'yes' ) {
+                        $round_tip = 'before_tax';
+                    }
                     ?>
                     <form method="post" action="options.php">
                         <table class="form-table">
@@ -223,10 +228,11 @@ class Wpcot_Backend {
                                 <th scope="row"><?php esc_html_e( 'Round tip amount', 'wpc-order-tip' ); ?></th>
                                 <td>
                                     <label> <select name="wpcot_settings[round_tip]">
-                                            <option value="yes" <?php selected( $round_tip, 'yes' ); ?>><?php esc_html_e( 'Yes', 'wpc-order-tip' ); ?></option>
+                                            <option value="before_tax" <?php selected( $round_tip, 'before_tax' ); ?>><?php esc_html_e( 'Round tip before tax', 'wpc-order-tip' ); ?></option>
+                                            <option value="after_tax" <?php selected( $round_tip, 'after_tax' ); ?>><?php esc_html_e( 'Round tip after tax', 'wpc-order-tip' ); ?></option>
                                             <option value="no" <?php selected( $round_tip, 'no' ); ?>><?php esc_html_e( 'No', 'wpc-order-tip' ); ?></option>
                                         </select> </label>
-                                    <span class="description"><?php esc_html_e( 'Do you want to round the tip amount when calculated by percentage?', 'wpc-order-tip' ); ?></span>
+                                    <span class="description"><?php esc_html_e( 'Round the tip amount before or after tax calculation. "Before tax" rounds the percentage-calculated amount. "After tax" adjusts the pre-tax amount so that the total (amount + tax) is a whole number.', 'wpc-order-tip' ); ?></span>
                                 </td>
                             </tr>
                             <tr>

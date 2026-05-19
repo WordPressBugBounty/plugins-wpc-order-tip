@@ -25,6 +25,9 @@ class Wpcot_Frontend {
 		add_action( 'wp', [ $this, 'apply_tips' ] );
 		add_action( 'woocommerce_cart_calculate_fees', [ $this, 'apply_tips' ] );
 
+		// round tip total (amount + tax) by adjusting pre-tax amount
+		add_filter( 'wpcot_tip_amount', [ $this, 'round_tip_amount' ], 10, 2 );
+
 		// cart
 		switch ( Wpcot_Helper()->get_setting( 'position_cart', 'before_totals' ) ) {
 			case 'before_cart':
@@ -302,8 +305,8 @@ class Wpcot_Frontend {
 							$subtotal = apply_filters( 'wpcot_cart_subtotal', WC()->cart->get_subtotal() );
 							$amount   = ( (float) $value / 100 ) * $subtotal;
 
-							// Round the tip amount if the setting is enabled
-							if ( Wpcot_Helper()->get_setting( 'round_tip', 'no' ) === 'yes' ) {
+							// Round the tip amount before tax if the setting is enabled
+							if ( in_array( Wpcot_Helper()->get_setting( 'round_tip', 'no' ), [ 'yes', 'before_tax' ], true ) ) {
 								$amount = round( $amount );
 							}
 						} else {
@@ -330,6 +333,56 @@ class Wpcot_Frontend {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Round tip amount so that (amount + tax) is a whole number.
+	 *
+	 * Uses WC_Tax::get_rates() to calculate the actual tax rate for the
+	 * tip's tax class, then adjusts the pre-tax amount so that the
+	 * inclusive total rounds to the nearest integer.
+	 *
+	 * @param float $amount The tip amount (pre-tax).
+	 * @param array $tip    The tip configuration data.
+	 *
+	 * @return float
+	 */
+	function round_tip_amount( $amount, $tip ) {
+		$round_tip = Wpcot_Helper()->get_setting( 'round_tip', 'no' );
+
+		if ( $round_tip !== 'after_tax' ) {
+			return $amount;
+		}
+
+		$taxable = wc_tax_enabled() && wc_string_to_bool( $tip['taxable'] ?? 'no' );
+
+		if ( $taxable ) {
+			$tax_class = $tip['tax_class'] ?? '';
+			$tax_rates = WC_Tax::get_rates( $tax_class );
+			$taxes     = WC_Tax::calc_tax( $amount, $tax_rates, false );
+			$tax_total = array_sum( $taxes );
+			$total     = $amount + $tax_total;
+
+			// Skip if already a whole number
+			if ( abs( $total - round( $total ) ) < 0.001 ) {
+				return $amount;
+			}
+
+			$rounded_total = round( $total );
+
+			if ( $tax_total > 0 ) {
+				// Reverse-calculate pre-tax amount from the rounded total
+				$tax_rate = $tax_total / $amount;
+				$amount   = $rounded_total / ( 1 + $tax_rate );
+			} else {
+				$amount = $rounded_total;
+			}
+		} else {
+			// No tax, just round the amount directly
+			$amount = round( $amount );
+		}
+
+		return $amount;
 	}
 
 	function clean_value( $value ) {
