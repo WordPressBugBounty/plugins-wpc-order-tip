@@ -13,7 +13,6 @@ class Wpcot_Backend {
     }
 
     public function __construct() {
-        add_action( 'init', [ $this, 'init' ] );
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 
         // Settings
@@ -28,16 +27,10 @@ class Wpcot_Backend {
         // AJAX
         add_action( 'wp_ajax_wpcot_add_tip', [ $this, 'ajax_add_tip' ] );
     }
-
-    public function init() {
-        // load text-domain
-        load_plugin_textdomain( 'wpc-order-tip', false, basename( WPCOT_DIR ) . '/languages/' );
-    }
-
     public function enqueue_scripts( $hook ) {
         if ( str_contains( $hook, 'wpcot' ) ) {
             wp_enqueue_style( 'wp-color-picker' );
-            wp_enqueue_style( 'hint', WPCOT_URI . 'assets/css/hint.css' );
+            wp_enqueue_style( 'hint', WPCOT_URI . 'assets/css/hint.css', [], WPCOT_VERSION );
             wp_enqueue_style( 'wpcot-backend', WPCOT_URI . 'assets/css/backend.css', [ 'woocommerce_admin_styles' ], WPCOT_VERSION );
             wp_enqueue_script( 'wpcot-backend', WPCOT_URI . 'assets/js/backend.js', [
                     'jquery',
@@ -89,7 +82,7 @@ class Wpcot_Backend {
     }
 
     public function admin_menu_content() {
-        $active_tab = sanitize_key( $_GET['tab'] ?? 'settings' );
+        $active_tab = sanitize_key( wp_unslash( $_GET['tab'] ?? 'settings' ) );
         ?>
         <div class="wpclever_settings_page wrap">
             <div class="wpclever_settings_page_header">
@@ -112,7 +105,7 @@ class Wpcot_Backend {
                 </div>
             </div>
             <h2></h2>
-            <?php if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] ) { ?>
+            <?php if ( isset( $_GET['settings-updated'] ) && 'true' === sanitize_text_field( wp_unslash( $_GET['settings-updated'] ) ) ) { ?>
                 <div class="notice notice-success is-dismissible">
                     <p><?php esc_html_e( 'Settings updated.', 'wpc-order-tip' ); ?></p>
                 </div>
@@ -221,7 +214,7 @@ class Wpcot_Backend {
                                                class="wpcot_color_picker"
                                                value="<?php echo esc_attr( Wpcot_Helper()->get_setting( 'active_color', $active_color_default ) ); ?>"/>
                                     </label>
-                                    <span class="description"><?php printf( /* translators: color */ esc_html__( 'Choose the color for the active button, default %s', 'wpc-order-tip' ), '<code>' . $active_color_default . '</code>' ); ?></span>
+                                    <span class="description"><?php printf( /* translators: color */ esc_html__( 'Choose the color for the active button, default %s', 'wpc-order-tip' ), '<code>' . esc_html( $active_color_default ) . '</code>' ); ?></span>
                                 </td>
                             </tr>
                             <tr>

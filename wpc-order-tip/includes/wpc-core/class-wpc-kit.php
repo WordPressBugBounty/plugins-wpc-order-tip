@@ -78,7 +78,7 @@ if ( ! class_exists( 'WPCleverKit' ) ) {
         }
 
         function ajax_get_essential_kit() {
-            if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( sanitize_key( $_POST['security'] ), 'wpc_kit' ) ) {
+            if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['security'] ) ), 'wpc_kit' ) ) {
                 die( 'Permissions check failed!' );
             }
 

@@ -78,7 +78,7 @@ class Wpcot_Frontend {
 		$color         = Wpcot_Helper()->get_setting( 'active_color', $color_default );
 		$inline_css    = '.wpcot-tips .wpcot-tip .wpcot-tip-values .wpcot-tip-value:hover > span, .wpcot-tips .wpcot-tip .wpcot-tip-values .wpcot-tip-value.active > span, .wpcot-tips .wpcot-tip .wpcot-tip-values .wpcot-tip-value-custom:hover > span, .wpcot-tips .wpcot-tip .wpcot-tip-values .wpcot-tip-value-custom.active > span, .wpcot-tips .wpcot-tip .wpcot-tip-custom .wpcot-tip-custom-form input[type=button]:hover {background-color: ' . $color . ';} .wpcot-tips .wpcot-tip .wpcot-tip-values .wpcot-tip-value:hover, .wpcot-tips .wpcot-tip .wpcot-tip-values .wpcot-tip-value.active, .wpcot-tips .wpcot-tip .wpcot-tip-values .wpcot-tip-value-custom:hover, .wpcot-tips .wpcot-tip .wpcot-tip-values .wpcot-tip-value-custom.active {border-color: ' . $color . ';}';
 
-		wp_enqueue_style( 'wpcot-frontend', WPCOT_URI . 'assets/css/frontend.css' );
+		wp_enqueue_style( 'wpcot-frontend', WPCOT_URI . 'assets/css/frontend.css', [], WPCOT_VERSION );
 		wp_add_inline_style( 'wpcot-frontend', $inline_css );
 
 		wp_enqueue_script( 'wpcot-frontend', WPCOT_URI . 'assets/js/frontend.js', [ 'jquery' ], WPCOT_VERSION, true );
@@ -96,7 +96,7 @@ class Wpcot_Frontend {
 	}
 
 	public function show_tips() {
-		echo self::get_tips();
+		echo wp_kses_post( self::get_tips() );
 	}
 
 	function order_review_fragments( $fragments ) {
@@ -135,7 +135,7 @@ class Wpcot_Frontend {
 				echo '<div class="wpcot-tip-values">';
 
 				if ( $no_btn_position === 'first' ) {
-					echo $no_btn_html;
+					echo wp_kses_post( $no_btn_html );
 				}
 
 				if ( ! empty( $tip['values'] ) ) {
@@ -159,19 +159,19 @@ class Wpcot_Frontend {
 				}
 
 				if ( $has_custom && $active_value ) {
-					echo '<div class="wpcot-tip-value active"><span>' . wc_price( abs( $active_value ) ) . '</span></div>';
+					echo '<div class="wpcot-tip-value active"><span>' . wp_kses_post( wc_price( abs( $active_value ) ) ) . '</span></div>';
 				}
 
 				if ( $no_btn_position === 'before_other' ) {
-					echo $no_btn_html;
+					echo wp_kses_post( $no_btn_html );
 				}
 
 				if ( $custom ) {
-					echo '<div class="wpcot-tip-value-custom"><span>' . Wpcot_Helper()->localization( 'other', esc_html__( 'Other', 'wpc-order-tip' ) ) . '</span></div>';
+					echo '<div class="wpcot-tip-value-custom"><span>' . esc_html( Wpcot_Helper()->localization( 'other', esc_html__( 'Other', 'wpc-order-tip' ) ) ) . '</span></div>';
 				}
 
 				if ( $no_btn_position === 'last' ) {
-					echo $no_btn_html;
+					echo wp_kses_post( $no_btn_html );
 				}
 
 				echo '</div><!-- /wpcot-tip-values -->';
@@ -194,13 +194,13 @@ class Wpcot_Frontend {
 	}
 
 	function ajax_apply_tip() {
-		if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( sanitize_key( $_POST['security'] ), 'wpcot_apply_tip' ) ) {
+		if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['security'] ) ), 'wpcot_apply_tip' ) ) {
 			die( 'Permissions check failed!' );
 		}
 
 		$wc_session = WC()->session;
 		$ct_session = $wc_session->get( 'customer' );
-		$key        = sanitize_text_field( $_POST['key'] );
+		$key        = isset( $_POST['key'] ) ? sanitize_text_field( wp_unslash( $_POST['key'] ) ) : '';
 		$all_tips   = Wpcot_Helper()->get_tips( 'apply' );
 		$tips       = [];
 
@@ -209,8 +209,8 @@ class Wpcot_Frontend {
 		}
 
 		if ( isset( $all_tips[ $key ] ) ) {
-			$tips[ $key ]['value']  = sanitize_text_field( $_POST['value'] );
-			$_SESSION['wpcot_tips'] = serialize( $tips );
+			$tips[ $key ]['value']  = isset( $_POST['value'] ) ? sanitize_text_field( wp_unslash( $_POST['value'] ) ) : '';
+			$_SESSION['wpcot_tips'] = json_encode( $tips );
 
 			if ( $ct_session ) {
 				$wc_session->set( 'wpcot_tips', $tips );
@@ -221,13 +221,13 @@ class Wpcot_Frontend {
 	}
 
 	function ajax_remove_tip() {
-		if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( sanitize_key( $_POST['security'] ), 'wpcot_remove_tip' ) ) {
+		if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['security'] ) ), 'wpcot_remove_tip' ) ) {
 			die( 'Permissions check failed!' );
 		}
 
 		$wc_session = WC()->session;
 		$ct_session = $wc_session->get( 'customer' );
-		$key        = sanitize_text_field( $_POST['key'] );
+		$key        = isset( $_POST['key'] ) ? sanitize_text_field( wp_unslash( $_POST['key'] ) ) : '';
 		$tips       = [];
 
 		if ( $ct_session ) {
@@ -236,7 +236,7 @@ class Wpcot_Frontend {
 
 		unset( $tips[ $key ] );
 
-		$_SESSION['wpcot_tips'] = serialize( $tips );
+		$_SESSION['wpcot_tips'] = json_encode( $tips );
 
 		if ( $ct_session ) {
 			$wc_session->set( 'wpcot_tips', $tips );
@@ -259,7 +259,7 @@ class Wpcot_Frontend {
 				$wc_session->__unset( 'wpcot_tips' );
 			}
 
-			if ( isset( $_SESSION['wpcot_tips'] ) && $_SESSION['wpcot_tips'] ) {
+			if ( isset( $_SESSION['wpcot_tips'] ) && sanitize_text_field( wp_unslash( $_SESSION['wpcot_tips'] ) ) ) {
 				unset( $_SESSION['wpcot_tips'] );
 			}
 		}
@@ -274,8 +274,13 @@ class Wpcot_Frontend {
 		$tips       = $wc_session ? $wc_session->get( 'wpcot_tips' ) : [];
 
 		if ( empty( $tips ) ) {
-			if ( isset( $_SESSION['wpcot_tips'] ) && $_SESSION['wpcot_tips'] ) {
-				$tips = unserialize( $_SESSION['wpcot_tips'] );
+			if ( isset( $_SESSION['wpcot_tips'] ) && sanitize_text_field( wp_unslash( $_SESSION['wpcot_tips'] ) ) ) {
+				$session_val = sanitize_text_field( wp_unslash( $_SESSION['wpcot_tips'] ) );
+				$tips        = json_decode( $session_val, true );
+
+				if ( json_last_error() !== JSON_ERROR_NONE ) {
+					$tips = is_serialized( $session_val ) ? unserialize( $session_val ) : [];
+				}
 			}
 		}
 

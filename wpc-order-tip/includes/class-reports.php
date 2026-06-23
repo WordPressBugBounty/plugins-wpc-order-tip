@@ -12,11 +12,11 @@ class Wpcot_Reports {
     }
 
     function enqueue_scripts() {
-        wp_enqueue_style( 'wpcot-reports', WPCOT_URI . 'assets/css/reports.css' );
+        wp_enqueue_style( 'wpcot-reports', WPCOT_URI . 'assets/css/reports.css', [], WPCOT_VERSION );
         wp_enqueue_script( 'wpcot-reports', WPCOT_URI . 'assets/js/reports.js', [
                 'jquery',
                 'jquery-ui-datepicker'
-        ], null, true );
+        ], WPCOT_VERSION, true );
     }
 
     function get_order_statuses() {
@@ -43,8 +43,8 @@ class Wpcot_Reports {
 
     function display_reports() {
         $names    = apply_filters( 'wpcot_default_tip_names', [ esc_html__( 'Tip', 'wpc-order-tip' ) ] );
-        $to       = date( 'Y-m-d' );
-        $from     = date( 'Y-m-d', strtotime( '-30 days' ) );
+        $to       = gmdate( 'Y-m-d' );
+        $from     = gmdate( 'Y-m-d', strtotime( '-30 days' ) );
         $ids      = [];
         $status   = 'all';
         $statuses = $this->get_order_statuses();
@@ -58,14 +58,14 @@ class Wpcot_Reports {
                 'date_query'  => [
                         [
                                 'after'     => [
-                                        'year'  => date( 'Y', strtotime( $from ) ),
-                                        'month' => date( 'm', strtotime( $from ) ),
-                                        'day'   => date( 'd', strtotime( $from ) )
+                                        'year'  => gmdate( 'Y', strtotime( $from ) ),
+                                        'month' => gmdate( 'm', strtotime( $from ) ),
+                                        'day'   => gmdate( 'd', strtotime( $from ) )
                                 ],
                                 'before'    => [
-                                        'year'  => date( 'Y', strtotime( $to ) ),
-                                        'month' => date( 'm', strtotime( $to ) ),
-                                        'day'   => date( 'd', strtotime( $to ) )
+                                        'year'  => gmdate( 'Y', strtotime( $to ) ),
+                                        'month' => gmdate( 'm', strtotime( $to ) ),
+                                        'day'   => gmdate( 'd', strtotime( $to ) )
                                 ],
                                 'inclusive' => true
                         ],
@@ -107,7 +107,7 @@ class Wpcot_Reports {
                 'to'    => $to
         ];
 
-        echo $this->view_reports( $data );
+        echo wp_kses( $this->view_reports( $data ), $this->get_allowed_html() );
     }
 
     function check_tip_name( $name = '', $names = [] ) {
@@ -128,10 +128,10 @@ class Wpcot_Reports {
     }
 
     function ajax_display_reports() {
-        $names  = isset( $_REQUEST['names'] ) ? explode( ',', sanitize_text_field( $_REQUEST['names'] ) ) : apply_filters( 'wpcot_default_tip_names', [ esc_html__( 'Tip', 'wpc-order-tip' ) ] );
-        $from   = sanitize_text_field( $_REQUEST['from'] ?? '' );
-        $to     = sanitize_text_field( $_REQUEST['to'] ?? '' );
-        $status = sanitize_text_field( $_REQUEST['status'] ?? 'all' );
+        $names  = isset( $_REQUEST['names'] ) ? explode( ',', sanitize_text_field( wp_unslash( $_REQUEST['names'] ) ) ) : apply_filters( 'wpcot_default_tip_names', [ esc_html__( 'Tip', 'wpc-order-tip' ) ] );
+        $from   = sanitize_text_field( wp_unslash( $_REQUEST['from'] ?? '' ) );
+        $to     = sanitize_text_field( wp_unslash( $_REQUEST['to'] ?? '' ) );
+        $status = sanitize_text_field( wp_unslash( $_REQUEST['status'] ?? 'all' ) );
         $result = '';
         $errors = [];
 
@@ -141,7 +141,7 @@ class Wpcot_Reports {
             if ( $data['ids'] && ! $data['errors'] ) {
                 ob_start();
 
-                echo $this->view_reports_table( $data );
+                echo wp_kses( $this->view_reports_table( $data ), $this->get_allowed_html() );
 
                 $result = ob_get_clean();
             } else {
@@ -176,14 +176,14 @@ class Wpcot_Reports {
                 'date_query'  => [
                         [
                                 'after'     => [
-                                        'year'  => date( 'Y', strtotime( $from ) ),
-                                        'month' => date( 'm', strtotime( $from ) ),
-                                        'day'   => date( 'd', strtotime( $from ) )
+                                        'year'  => gmdate( 'Y', strtotime( $from ) ),
+                                        'month' => gmdate( 'm', strtotime( $from ) ),
+                                        'day'   => gmdate( 'd', strtotime( $from ) )
                                 ],
                                 'before'    => [
-                                        'year'  => date( 'Y', strtotime( $to ) ),
-                                        'month' => date( 'm', strtotime( $to ) ),
-                                        'day'   => date( 'd', strtotime( $to ) )
+                                        'year'  => gmdate( 'Y', strtotime( $to ) ),
+                                        'month' => gmdate( 'm', strtotime( $to ) ),
+                                        'day'   => gmdate( 'd', strtotime( $to ) )
                                 ],
                                 'inclusive' => true
                         ],
@@ -232,17 +232,17 @@ class Wpcot_Reports {
 
     function export_tips_csv() {
         if (
-                isset( $_REQUEST['a'] ) && $_REQUEST['a'] == 'export' &&
-                isset( $_REQUEST['from'] ) && $_REQUEST['from'] &&
-                isset( $_REQUEST['to'] ) && $_REQUEST['to']
+                isset( $_REQUEST['a'] ) && 'export' === sanitize_text_field( wp_unslash( $_REQUEST['a'] ) ) &&
+                isset( $_REQUEST['from'] ) && sanitize_text_field( wp_unslash( $_REQUEST['from'] ) ) &&
+                isset( $_REQUEST['to'] ) && sanitize_text_field( wp_unslash( $_REQUEST['to'] ) )
         ) {
-            $names  = isset( $_REQUEST['names'] ) ? explode( ',', sanitize_text_field( $_REQUEST['names'] ) ) : apply_filters( 'wpcot_default_tip_names', [ esc_html__( 'Tip', 'wpc-order-tip' ) ] );
-            $from   = sanitize_text_field( $_REQUEST['from'] ?? '' );
-            $to     = sanitize_text_field( $_REQUEST['to'] ?? '' );
-            $status = sanitize_text_field( $_REQUEST['status'] ?? '' );
+            $names  = isset( $_REQUEST['names'] ) ? explode( ',', sanitize_text_field( wp_unslash( $_REQUEST['names'] ) ) ) : apply_filters( 'wpcot_default_tip_names', [ esc_html__( 'Tip', 'wpc-order-tip' ) ] );
+            $from   = sanitize_text_field( wp_unslash( $_REQUEST['from'] ?? '' ) );
+            $to     = sanitize_text_field( wp_unslash( $_REQUEST['to'] ?? '' ) );
+            $status = sanitize_text_field( wp_unslash( $_REQUEST['status'] ?? '' ) );
             $fp     = $this->get_tips_csv_header( $from, $to );
             $this->create_tips_csv_lines( $fp, $names, $from, $to, $status );
-            fclose( $fp );
+            fclose( $fp ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
             exit;
         }
     }
@@ -253,7 +253,7 @@ class Wpcot_Reports {
         header( 'Content-Type: application/excel' );
         header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
 
-        $fp      = fopen( 'php://output', 'w' );
+        $fp      = fopen( 'php://output', 'w' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
         $columns = [
                 esc_html__( 'Order ID', 'wpc-order-tip' ),
                 esc_html__( 'Order Status', 'wpc-order-tip' ),
@@ -266,7 +266,7 @@ class Wpcot_Reports {
         $csvheader = $columns;
         $csvheader = array_map( 'utf8_decode', $csvheader );
 
-        fputcsv( $fp, $csvheader, ',' );
+        fputcsv( $fp, $csvheader, ',' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fputcsv
 
         return $fp;
     }
@@ -283,14 +283,14 @@ class Wpcot_Reports {
                 'date_query'  => [
                         [
                                 'after'     => [
-                                        'year'  => date( 'Y', strtotime( $from ) ),
-                                        'month' => date( 'm', strtotime( $from ) ),
-                                        'day'   => date( 'd', strtotime( $from ) )
+                                        'year'  => gmdate( 'Y', strtotime( $from ) ),
+                                        'month' => gmdate( 'm', strtotime( $from ) ),
+                                        'day'   => gmdate( 'd', strtotime( $from ) )
                                 ],
                                 'before'    => [
-                                        'year'  => date( 'Y', strtotime( $to ) ),
-                                        'month' => date( 'm', strtotime( $to ) ),
-                                        'day'   => date( 'd', strtotime( $to ) )
+                                        'year'  => gmdate( 'Y', strtotime( $to ) ),
+                                        'month' => gmdate( 'm', strtotime( $to ) ),
+                                        'day'   => gmdate( 'd', strtotime( $to ) )
                                 ],
                                 'inclusive' => true
                         ],
@@ -319,20 +319,20 @@ class Wpcot_Reports {
                 if ( $has_tip ) {
                     $total += $tip_total;
 
-                    fputcsv( $fp, [
+                    fputcsv( $fp, [ // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fputcsv
                             $order->get_id(),
                             wc_get_order_status_name( $status ),
                             $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
                             implode( ', ', $tip_names ),
                             $tip_total,
-                            date( get_option( 'date_format' ), strtotime( $order->get_date_created() ) )
+                            gmdate( get_option( 'date_format' ), strtotime( $order->get_date_created() ) )
                     ] );
                 }
             }
 
-            fputcsv( $fp, [] );
-            fputcsv( $fp, [ esc_html__( 'Total', 'wpc-order-tip' ), $total ] );
-            fputcsv( $fp, [ esc_html__( 'Currency', 'wpc-order-tip' ), get_woocommerce_currency() ] );
+            fputcsv( $fp, [] ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fputcsv
+            fputcsv( $fp, [ esc_html__( 'Total', 'wpc-order-tip' ), $total ] ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fputcsv
+            fputcsv( $fp, [ esc_html__( 'Currency', 'wpc-order-tip' ), get_woocommerce_currency() ] ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fputcsv
         }
     }
 
@@ -346,14 +346,14 @@ class Wpcot_Reports {
                         <?php esc_html_e( 'From', 'wpc-order-tip' ); ?>
                     </label>
                     <input type="text" id="wpcot-reports-from" placeholder="Click to choose date"
-                           value="<?php echo date( 'Y-m-d', strtotime( '-30 days' ) ); ?>"/>
+                           value="<?php echo esc_attr( gmdate( 'Y-m-d', strtotime( '-30 days' ) ) ); ?>"/>
                 </div>
                 <div class="wpcot-reports-col">
                     <label for="wpcot-reports-to">
                         <?php esc_html_e( 'To', 'wpc-order-tip' ); ?>
                     </label>
                     <input type="text" id="wpcot-reports-to" placeholder="Click to choose date"
-                           value="<?php echo date( 'Y-m-d' ); ?>"/>
+                           value="<?php echo esc_attr( gmdate( 'Y-m-d' ) ); ?>"/>
                 </div>
                 <div class="wpcot-reports-col">
                     <label for="wpcot-reports-status">
@@ -374,7 +374,7 @@ class Wpcot_Reports {
                         <?php esc_html_e( 'Name(s)', 'wpc-order-tip' ); ?>
                     </label>
                     <input type="text" id="wpcot-reports-names" placeholder="Name(s) to check, split by a comma"
-                           value="<?php echo implode( ', ', apply_filters( 'wpcot_default_tip_names', [ esc_html__( 'Tip', 'wpc-order-tip' ) ] ) ); ?>"/>
+                           value="<?php echo esc_attr( implode( ', ', apply_filters( 'wpcot_default_tip_names', [ esc_html__( 'Tip', 'wpc-order-tip' ) ] ) ) ); ?>"/>
                 </div>
                 <div class="wpcot-reports-col">
                     <button id="wpcot-reports-filter"
@@ -383,7 +383,7 @@ class Wpcot_Reports {
             </div>
             <div id="wpcot-reports-error"></div>
             <div id="wpcot-reports-result">
-                <?php echo $this->view_reports_table( $data ); ?>
+                <?php echo wp_kses( $this->view_reports_table( $data ), $this->get_allowed_html() ); ?>
             </div>
         </div>
         <?php
@@ -393,18 +393,18 @@ class Wpcot_Reports {
     function view_reports_table( $data ) {
         ob_start();
         $names  = isset( $data['names'] ) ? ( is_array( $data['names'] ) ? implode( ',', array_map( 'trim', $data['names'] ) ) : $data['names'] ) : '';
-        $from   = $data['from'] ?? date( 'Y-m-d', strtotime( '-30 days' ) );
-        $to     = $data['to'] ?? date( 'Y-m-d' );
+        $from   = $data['from'] ?? gmdate( 'Y-m-d', strtotime( '-30 days' ) );
+        $to     = $data['to'] ?? gmdate( 'Y-m-d' );
         $status = $data['status'] ?? 'all';
         ?>
         <p id="displaying-from-to">
             <?php printf(
             /* translators: date */ esc_html__( 'Displaying orders between %1$s and %2$s', 'wpc-order-tip' ),
-                    '<span id="displaying-from">' . $from . '</span>',
-                    '<span id="displaying-to">' . $to . '</span>'
+                    '<span id="displaying-from">' . esc_html( $from ) . '</span>',
+                    '<span id="displaying-to">' . esc_html( $to ) . '</span>'
             ); ?>
             <a id="wpcot-export-csv"
-               href="<?php echo esc_url( admin_url( 'admin.php?page=wc-reports&tab=wpcot&a=export&from=' . $from . '&to=' . $to . '&names=' . $names . '&status=' . $status ) ); ?>"
+               href="<?php echo esc_url( admin_url( 'admin.php?page=wc-reports&tab=wpcot&a=export&from=' . rawurlencode( $from ) . '&to=' . rawurlencode( $to ) . '&names=' . rawurlencode( $names ) . '&status=' . rawurlencode( $status ) ) ); ?>"
                class="button"><?php esc_html_e( 'Export to CSV', 'wpc-order-tip' ); ?></a>
         </p>
         <table id="wpcot-reports-table" class="wp-list-table widefat fixed striped table-view-list pages">
@@ -442,22 +442,82 @@ class Wpcot_Reports {
                         <?php echo esc_html( ! empty( $od['name'] ) ? $od['name'] : '' ); ?>
                     </td>
                     <td>
-                        <?php echo wc_price( $od['value'] ); ?>
+                        <?php echo wp_kses_post( wc_price( $od['value'] ) ); ?>
                     </td>
                     <td>
-                        <?php echo esc_html( date( get_option( 'date_format' ), strtotime( $od['date'] ) ) ); ?>
+                        <?php echo esc_html( gmdate( get_option( 'date_format' ), strtotime( $od['date'] ) ) ); ?>
                     </td>
                 </tr>
             <?php } ?>
             </tbody>
             <?php if ( $data['ids'] && $total ) { ?>
                 <tfoot>
-                <td colspan="6"><?php echo esc_html__( 'Total: ', 'wpc-order-tip' ) . wc_price( $total ); ?></td>
+                <td colspan="6"><?php echo esc_html__( 'Total: ', 'wpc-order-tip' ) . wp_kses_post( wc_price( $total ) ); ?></td>
                 </tfoot>
             <?php } ?>
         </table>
         <?php
         return ob_get_clean();
+    }
+
+    /**
+     * Get allowed HTML tags and attributes for escaping report views.
+     *
+     * @return array Allowed HTML tags.
+     */
+    private function get_allowed_html() {
+        return [
+            'div'    => [
+                'id'    => true,
+                'class' => true,
+            ],
+            'label'  => [
+                'for' => true,
+            ],
+            'input'  => [
+                'type'        => true,
+                'id'          => true,
+                'placeholder' => true,
+                'value'       => true,
+                'class'       => true,
+            ],
+            'select' => [
+                'id'    => true,
+                'class' => true,
+            ],
+            'option' => [
+                'value'    => true,
+                'selected' => true,
+            ],
+            'button' => [
+                'id'    => true,
+                'class' => true,
+            ],
+            'p'      => [
+                'id' => true,
+            ],
+            'span'   => [
+                'id' => true,
+            ],
+            'a'      => [
+                'id'     => true,
+                'href'   => true,
+                'class'  => true,
+                'target' => true,
+            ],
+            'table'  => [
+                'id'    => true,
+                'class' => true,
+            ],
+            'thead'  => [],
+            'tbody'  => [],
+            'tfoot'  => [],
+            'tr'     => [],
+            'th'     => [],
+            'td'     => [
+                'colspan' => true,
+            ],
+        ];
     }
 }
 
