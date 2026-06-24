@@ -109,6 +109,16 @@ class Wpcot_Frontend {
 		ob_start();
 		$wc_session  = WC()->session;
 		$active_tips = $wc_session->get( 'wpcot_tips' );
+
+		// Fallback to PHP session for guest users when WC session hasn't persisted yet
+		if ( empty( $active_tips ) && isset( $_SESSION['wpcot_tips'] ) && sanitize_text_field( wp_unslash( $_SESSION['wpcot_tips'] ) ) ) {
+			$session_val = sanitize_text_field( wp_unslash( $_SESSION['wpcot_tips'] ) );
+			$active_tips = json_decode( $session_val, true );
+
+			if ( json_last_error() !== JSON_ERROR_NONE ) {
+				$active_tips = is_serialized( $session_val ) ? unserialize( $session_val ) : []; // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
+			}
+		}
 		$tips        = Wpcot_Helper()->get_tips( 'apply' );
 		$btn_style   = Wpcot_Helper()->get_setting( 'btn_style', 'square' );
 		$tips_class  = 'wpcot-tips wpcot-btn-' . $btn_style;
@@ -199,21 +209,29 @@ class Wpcot_Frontend {
 		}
 
 		$wc_session = WC()->session;
-		$ct_session = $wc_session->get( 'customer' );
 		$key        = isset( $_POST['key'] ) ? sanitize_text_field( wp_unslash( $_POST['key'] ) ) : '';
 		$all_tips   = Wpcot_Helper()->get_tips( 'apply' );
-		$tips       = [];
 
-		if ( $ct_session ) {
-			$tips = $wc_session->get( 'wpcot_tips' );
-		}
+		// Always read from WC session — works for both guests and logged-in users
+		$tips = $wc_session->get( 'wpcot_tips' ) ?: [];
 
 		if ( isset( $all_tips[ $key ] ) ) {
-			$tips[ $key ]['value']  = isset( $_POST['value'] ) ? sanitize_text_field( wp_unslash( $_POST['value'] ) ) : '';
+			$tips[ $key ]['value'] = isset( $_POST['value'] ) ? sanitize_text_field( wp_unslash( $_POST['value'] ) ) : '';
 			$_SESSION['wpcot_tips'] = json_encode( $tips );
 
-			if ( $ct_session ) {
-				$wc_session->set( 'wpcot_tips', $tips );
+			// Always write to WC session — works for both guests and logged-in users
+			$wc_session->set( 'wpcot_tips', $tips );
+
+			// For guest users: ensure session cookie is set and data is flushed to DB
+			// before the response ends, so the next request (fragment refresh) can read it
+			if ( ! is_user_logged_in() ) {
+				if ( method_exists( $wc_session, 'set_customer_session_cookie' ) ) {
+					$wc_session->set_customer_session_cookie( true );
+				}
+
+				if ( method_exists( $wc_session, 'save_data' ) ) {
+					$wc_session->save_data();
+				}
 			}
 		}
 
@@ -226,20 +244,28 @@ class Wpcot_Frontend {
 		}
 
 		$wc_session = WC()->session;
-		$ct_session = $wc_session->get( 'customer' );
 		$key        = isset( $_POST['key'] ) ? sanitize_text_field( wp_unslash( $_POST['key'] ) ) : '';
-		$tips       = [];
 
-		if ( $ct_session ) {
-			$tips = $wc_session->get( 'wpcot_tips' );
-		}
+		// Always read from WC session — works for both guests and logged-in users
+		$tips = $wc_session->get( 'wpcot_tips' ) ?: [];
 
 		unset( $tips[ $key ] );
 
 		$_SESSION['wpcot_tips'] = json_encode( $tips );
 
-		if ( $ct_session ) {
-			$wc_session->set( 'wpcot_tips', $tips );
+		// Always write to WC session — works for both guests and logged-in users
+		$wc_session->set( 'wpcot_tips', $tips );
+
+		// For guest users: ensure session cookie is set and data is flushed to DB
+		// before the response ends, so the next request (fragment refresh) can read it
+		if ( ! is_user_logged_in() ) {
+			if ( method_exists( $wc_session, 'set_customer_session_cookie' ) ) {
+				$wc_session->set_customer_session_cookie( true );
+			}
+
+			if ( method_exists( $wc_session, 'save_data' ) ) {
+				$wc_session->save_data();
+			}
 		}
 
 		wp_send_json( $tips );
