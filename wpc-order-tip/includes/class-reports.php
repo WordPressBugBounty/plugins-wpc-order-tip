@@ -128,7 +128,7 @@ class Wpcot_Reports {
     }
 
     function ajax_display_reports() {
-        $names  = isset( $_REQUEST['names'] ) ? explode( ',', sanitize_text_field( wp_unslash( $_REQUEST['names'] ) ) ) : apply_filters( 'wpcot_default_tip_names', [ esc_html__( 'Tip', 'wpc-order-tip' ) ] );
+        $names  = isset( $_REQUEST['names'] ) ? explode( ',', sanitize_text_field( wp_unslash( $_REQUEST['names'] ?? '' ) ) ) : apply_filters( 'wpcot_default_tip_names', [ esc_html__( 'Tip', 'wpc-order-tip' ) ] );
         $from   = sanitize_text_field( wp_unslash( $_REQUEST['from'] ?? '' ) );
         $to     = sanitize_text_field( wp_unslash( $_REQUEST['to'] ?? '' ) );
         $status = sanitize_text_field( wp_unslash( $_REQUEST['status'] ?? 'all' ) );
@@ -236,7 +236,7 @@ class Wpcot_Reports {
                 isset( $_REQUEST['from'] ) && sanitize_text_field( wp_unslash( $_REQUEST['from'] ) ) &&
                 isset( $_REQUEST['to'] ) && sanitize_text_field( wp_unslash( $_REQUEST['to'] ) )
         ) {
-            $names  = isset( $_REQUEST['names'] ) ? explode( ',', sanitize_text_field( wp_unslash( $_REQUEST['names'] ) ) ) : apply_filters( 'wpcot_default_tip_names', [ esc_html__( 'Tip', 'wpc-order-tip' ) ] );
+            $names  = isset( $_REQUEST['names'] ) ? explode( ',', sanitize_text_field( wp_unslash( $_REQUEST['names'] ?? '' ) ) ) : apply_filters( 'wpcot_default_tip_names', [ esc_html__( 'Tip', 'wpc-order-tip' ) ] );
             $from   = sanitize_text_field( wp_unslash( $_REQUEST['from'] ?? '' ) );
             $to     = sanitize_text_field( wp_unslash( $_REQUEST['to'] ?? '' ) );
             $status = sanitize_text_field( wp_unslash( $_REQUEST['status'] ?? '' ) );

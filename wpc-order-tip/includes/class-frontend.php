@@ -20,7 +20,6 @@ class Wpcot_Frontend {
 		add_action( 'wc_ajax_wpcot_remove_tip', [ $this, 'ajax_remove_tip' ] );
 
 		// apply tips
-		add_action( 'init', [ $this, 'init_session' ] );
 		add_action( 'woocommerce_new_order', [ $this, 'destroy_session' ] );
 		add_action( 'wp', [ $this, 'apply_tips' ] );
 		add_action( 'woocommerce_cart_calculate_fees', [ $this, 'apply_tips' ] );
@@ -108,17 +107,7 @@ class Wpcot_Frontend {
 	public function get_tips() {
 		ob_start();
 		$wc_session  = WC()->session;
-		$active_tips = $wc_session->get( 'wpcot_tips' );
-
-		// Fallback to PHP session for guest users when WC session hasn't persisted yet
-		if ( empty( $active_tips ) && isset( $_SESSION['wpcot_tips'] ) && sanitize_text_field( wp_unslash( $_SESSION['wpcot_tips'] ) ) ) {
-			$session_val = sanitize_text_field( wp_unslash( $_SESSION['wpcot_tips'] ) );
-			$active_tips = json_decode( $session_val, true );
-
-			if ( json_last_error() !== JSON_ERROR_NONE ) {
-				$active_tips = is_serialized( $session_val ) ? unserialize( $session_val ) : []; // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
-			}
-		}
+		$active_tips = $wc_session ? $wc_session->get( 'wpcot_tips' ) : [];
 		$tips        = Wpcot_Helper()->get_tips( 'apply' );
 		$btn_style   = Wpcot_Helper()->get_setting( 'btn_style', 'square' );
 		$tips_class  = 'wpcot-tips wpcot-btn-' . $btn_style;
@@ -209,17 +198,16 @@ class Wpcot_Frontend {
 		}
 
 		$wc_session = WC()->session;
-		$key        = isset( $_POST['key'] ) ? sanitize_text_field( wp_unslash( $_POST['key'] ) ) : '';
+		$key        = isset( $_POST['key'] ) ? sanitize_text_field( wp_unslash( $_POST['key'] ?? '' ) ) : '';
 		$all_tips   = Wpcot_Helper()->get_tips( 'apply' );
 
 		// Always read from WC session — works for both guests and logged-in users
 		$tips = $wc_session->get( 'wpcot_tips' ) ?: [];
 
 		if ( isset( $all_tips[ $key ] ) ) {
-			$tips[ $key ]['value'] = isset( $_POST['value'] ) ? sanitize_text_field( wp_unslash( $_POST['value'] ) ) : '';
-			$_SESSION['wpcot_tips'] = json_encode( $tips );
+			$tips[ $key ]['value'] = isset( $_POST['value'] ) ? sanitize_text_field( wp_unslash( $_POST['value'] ?? '' ) ) : '';
 
-			// Always write to WC session — works for both guests and logged-in users
+			// Write to WC session — works for both guests (cookie + DB) and logged-in users
 			$wc_session->set( 'wpcot_tips', $tips );
 
 			// For guest users: ensure session cookie is set and data is flushed to DB
@@ -244,16 +232,14 @@ class Wpcot_Frontend {
 		}
 
 		$wc_session = WC()->session;
-		$key        = isset( $_POST['key'] ) ? sanitize_text_field( wp_unslash( $_POST['key'] ) ) : '';
+		$key        = isset( $_POST['key'] ) ? sanitize_text_field( wp_unslash( $_POST['key'] ?? '' ) ) : '';
 
 		// Always read from WC session — works for both guests and logged-in users
 		$tips = $wc_session->get( 'wpcot_tips' ) ?: [];
 
 		unset( $tips[ $key ] );
 
-		$_SESSION['wpcot_tips'] = json_encode( $tips );
-
-		// Always write to WC session — works for both guests and logged-in users
+		// Write to WC session — works for both guests (cookie + DB) and logged-in users
 		$wc_session->set( 'wpcot_tips', $tips );
 
 		// For guest users: ensure session cookie is set and data is flushed to DB
@@ -271,22 +257,12 @@ class Wpcot_Frontend {
 		wp_send_json( $tips );
 	}
 
-	function init_session() {
-		if ( ! session_id() && WC()->session ) {
-			session_start();
-		}
-	}
-
 	function destroy_session() {
 		if ( ! is_admin() ) {
 			$wc_session = WC()->session;
 
 			if ( $wc_session && $wc_session->get( 'wpcot_tips' ) ) {
 				$wc_session->__unset( 'wpcot_tips' );
-			}
-
-			if ( isset( $_SESSION['wpcot_tips'] ) && sanitize_text_field( wp_unslash( $_SESSION['wpcot_tips'] ) ) ) {
-				unset( $_SESSION['wpcot_tips'] );
 			}
 		}
 	}
@@ -296,19 +272,17 @@ class Wpcot_Frontend {
 			return;
 		}
 
+		// Skip during Elementor editor save/preview requests to avoid unnecessary cart computation
+		if ( isset( $_GET['elementor-preview'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			return;
+		}
+
+		if ( defined( 'ELEMENTOR_VERSION' ) && class_exists( '\Elementor\Plugin' ) && isset( \Elementor\Plugin::$instance->editor ) && \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
+			return;
+		}
+
 		$wc_session = WC()->session;
 		$tips       = $wc_session ? $wc_session->get( 'wpcot_tips' ) : [];
-
-		if ( empty( $tips ) ) {
-			if ( isset( $_SESSION['wpcot_tips'] ) && sanitize_text_field( wp_unslash( $_SESSION['wpcot_tips'] ) ) ) {
-				$session_val = sanitize_text_field( wp_unslash( $_SESSION['wpcot_tips'] ) );
-				$tips        = json_decode( $session_val, true );
-
-				if ( json_last_error() !== JSON_ERROR_NONE ) {
-					$tips = is_serialized( $session_val ) ? unserialize( $session_val ) : [];
-				}
-			}
-		}
 
 		// remove all tips first
 		$fees     = WC()->cart->get_fees();

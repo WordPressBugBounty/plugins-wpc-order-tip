@@ -94,8 +94,10 @@
     color: #0073aa;
 }
 
-.wpclever_essential_kit_page a.activate-now:before, .wpclever_essential_kit_page a.activate-now:after,
-.wpclever_essential_kit_page a.deactivate-now:before, .wpclever_essential_kit_page a.deactivate-now:after {
+.wpclever_essential_kit_page a.activate-now:before,
+.wpclever_essential_kit_page a.activate-now:after,
+.wpclever_essential_kit_page a.deactivate-now:before,
+.wpclever_essential_kit_page a.deactivate-now:after {
     position: absolute;
     display: block;
     content: "";

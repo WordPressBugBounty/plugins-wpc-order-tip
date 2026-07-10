@@ -49,11 +49,11 @@ if ( ! class_exists( 'WPCleverKit' ) ) {
             }
 
             if ( isset( $_GET['action'], $_GET['plugin'], $_GET['_wpnonce'] ) && ( $_GET['action'] === 'activate' ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'activate-plugin_' . sanitize_text_field( wp_unslash( $_GET['plugin'] ) ) ) ) {
-                activate_plugin( sanitize_text_field( wp_unslash( $_GET['plugin'] ) ), '', false, true );
+                activate_plugin( sanitize_text_field( wp_unslash( $_GET['plugin'] ?? '' ) ), '', false, true );
             }
 
             if ( isset( $_GET['action'], $_GET['plugin'], $_GET['_wpnonce'] ) && ( $_GET['action'] === 'deactivate' ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'deactivate-plugin_' . sanitize_text_field( wp_unslash( $_GET['plugin'] ) ) ) ) {
-                deactivate_plugins( sanitize_text_field( wp_unslash( $_GET['plugin'] ) ), '', false, true );
+                deactivate_plugins( sanitize_text_field( wp_unslash( $_GET['plugin'] ?? '' ) ) );
             }
             ?>
             <div class="wpclever_page wrap">
@@ -63,11 +63,10 @@ if ( ! class_exists( 'WPCleverKit' ) ) {
                     <span class="wpclever_kit_order">
                         <a href="#" class="wpclever_kit_order_a" data-o="p">popular</a> |
                         <a href="#" class="wpclever_kit_order_a" data-o="u">last updated</a> |
-                        <a href="#" class="wpclever_kit_search_btn" title="Search"><span
-                                    class="dashicons dashicons-search"></span></a>
+                        <a href="#" class="wpclever_kit_search_btn" title="Search"><span class="dashicons dashicons-search"></span></a>
                     </span>
                     <span class="wpclever_kit_search" style="display:none">
-                        <input type="text" class="wpclever_kit_search_input" placeholder="Search plugins…"/>
+                        <input type="text" class="wpclever_kit_search_input" placeholder="Search plugins…" />
                         <a href="#" class="wpclever_kit_search_close" title="Close">&times;</a>
                     </span>
                 </div>
@@ -83,47 +82,53 @@ if ( ! class_exists( 'WPCleverKit' ) ) {
             }
 
             if ( false === ( $plugins_arr = get_transient( 'wpclever_plugins' ) ) ) {
-                $args    = (object) [
-                        'author'   => 'wpclever',
-                        'per_page' => '120',
-                        'page'     => '1',
-                        'fields'   => [
-                                'slug',
-                                'name',
-                                'version',
-                                'downloaded',
-                                'active_installs',
-                                'last_updated',
-                                'rating',
-                                'num_ratings',
-                                'short_description'
-                        ]
-                ];
-                $request = [
+                // Use API v1.2 which returns JSON instead of serialized PHP (safer and more reliable)
+                $url      = 'https://api.wordpress.org/plugins/info/1.2/';
+                $request  = [
                         'action'  => 'query_plugins',
                         'timeout' => 30,
-                        'request' => serialize( $args )
+                        'request' => [
+                                'author'   => 'wpclever',
+                                'per_page' => 120,
+                                'page'     => 1,
+                                'fields'   => [
+                                        'slug'              => true,
+                                        'name'              => true,
+                                        'version'           => true,
+                                        'downloaded'        => true,
+                                        'active_installs'   => true,
+                                        'last_updated'      => true,
+                                        'rating'            => true,
+                                        'num_ratings'       => true,
+                                        'short_description' => true,
+                                ],
+                        ],
                 ];
-                //https://codex.wordpress.org/WordPress.org_API
-                $url      = 'http://api.wordpress.org/plugins/info/1.0/';
-                $response = wp_remote_post( $url, [ 'body' => $request ] );
+                $response = wp_remote_get( add_query_arg( $request, $url ), [ 'timeout' => 30 ] );
 
                 if ( ! is_wp_error( $response ) ) {
                     $plugins_arr = [];
-                    $plugins     = unserialize( $response['body'] );
 
-                    if ( isset( $plugins->plugins ) && ( count( $plugins->plugins ) > 0 ) ) {
-                        foreach ( $plugins->plugins as $pl ) {
+                    // API v1.2 returns JSON - safe to decode without unserialize
+                    $data = json_decode( wp_remote_retrieve_body( $response ), true );
+
+                    // Validate the decoded structure before use
+                    if ( is_array( $data ) && isset( $data['plugins'] ) && is_array( $data['plugins'] ) && ( count( $data['plugins'] ) > 0 ) ) {
+                        foreach ( $data['plugins'] as $pl ) {
+                            if ( ! is_array( $pl ) ) {
+                                continue;
+                            }
+
                             $plugins_arr[] = [
-                                    'slug'              => $pl->slug,
-                                    'name'              => $pl->name,
-                                    'version'           => $pl->version,
-                                    'downloaded'        => $pl->downloaded,
-                                    'active_installs'   => $pl->active_installs,
-                                    'last_updated'      => strtotime( $pl->last_updated ),
-                                    'rating'            => $pl->rating,
-                                    'num_ratings'       => $pl->num_ratings,
-                                    'short_description' => $pl->short_description,
+                                    'slug'              => isset( $pl['slug'] ) ? (string) $pl['slug'] : '',
+                                    'name'              => isset( $pl['name'] ) ? (string) $pl['name'] : '',
+                                    'version'           => isset( $pl['version'] ) ? (string) $pl['version'] : '',
+                                    'downloaded'        => isset( $pl['downloaded'] ) ? (int) $pl['downloaded'] : 0,
+                                    'active_installs'   => isset( $pl['active_installs'] ) ? (int) $pl['active_installs'] : 0,
+                                    'last_updated'      => isset( $pl['last_updated'] ) ? strtotime( (string) $pl['last_updated'] ) : 0,
+                                    'rating'            => isset( $pl['rating'] ) ? (float) $pl['rating'] : 0,
+                                    'num_ratings'       => isset( $pl['num_ratings'] ) ? (int) $pl['num_ratings'] : 0,
+                                    'short_description' => isset( $pl['short_description'] ) ? (string) $pl['short_description'] : '',
                             ];
                         }
                     }

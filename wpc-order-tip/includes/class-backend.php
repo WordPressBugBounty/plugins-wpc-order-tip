@@ -105,7 +105,7 @@ class Wpcot_Backend {
                 </div>
             </div>
             <h2></h2>
-            <?php if ( isset( $_GET['settings-updated'] ) && 'true' === sanitize_text_field( wp_unslash( $_GET['settings-updated'] ) ) ) { ?>
+            <?php if ( isset( $_GET['settings-updated'] ) && 'true' === sanitize_text_field( wp_unslash( $_GET['settings-updated'] ?? '' ) ) ) { ?>
                 <div class="notice notice-success is-dismissible">
                     <p><?php esc_html_e( 'Settings updated.', 'wpc-order-tip' ); ?></p>
                 </div>
