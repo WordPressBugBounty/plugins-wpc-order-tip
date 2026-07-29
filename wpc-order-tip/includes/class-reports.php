@@ -17,6 +17,9 @@ class Wpcot_Reports {
                 'jquery',
                 'jquery-ui-datepicker'
         ], WPCOT_VERSION, true );
+        wp_localize_script( 'wpcot-reports', 'wpcot_reports_vars', [
+                'nonce' => wp_create_nonce( 'wpcot_display_reports' ),
+        ] );
     }
 
     function get_order_statuses() {
@@ -128,6 +131,14 @@ class Wpcot_Reports {
     }
 
     function ajax_display_reports() {
+        if ( ! check_ajax_referer( 'wpcot_display_reports', 'nonce', false ) || ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'view_woocommerce_reports' ) ) ) {
+            wp_send_json( [
+                    'status' => 'error',
+                    'result' => '',
+                    'errors' => [ esc_html__( 'You do not have permission to access this page.', 'wpc-order-tip' ) ],
+            ] );
+        }
+
         $names  = isset( $_REQUEST['names'] ) ? explode( ',', sanitize_text_field( wp_unslash( $_REQUEST['names'] ?? '' ) ) ) : apply_filters( 'wpcot_default_tip_names', [ esc_html__( 'Tip', 'wpc-order-tip' ) ] );
         $from   = sanitize_text_field( wp_unslash( $_REQUEST['from'] ?? '' ) );
         $to     = sanitize_text_field( wp_unslash( $_REQUEST['to'] ?? '' ) );
@@ -236,6 +247,14 @@ class Wpcot_Reports {
                 isset( $_REQUEST['from'] ) && sanitize_text_field( wp_unslash( $_REQUEST['from'] ) ) &&
                 isset( $_REQUEST['to'] ) && sanitize_text_field( wp_unslash( $_REQUEST['to'] ) )
         ) {
+            if ( ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'wpcot_export_csv' ) ) {
+                wp_die( esc_html__( 'Invalid nonce verification.', 'wpc-order-tip' ) );
+            }
+
+            if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'view_woocommerce_reports' ) ) {
+                wp_die( esc_html__( 'You do not have permission to access this page.', 'wpc-order-tip' ) );
+            }
+
             $names  = isset( $_REQUEST['names'] ) ? explode( ',', sanitize_text_field( wp_unslash( $_REQUEST['names'] ?? '' ) ) ) : apply_filters( 'wpcot_default_tip_names', [ esc_html__( 'Tip', 'wpc-order-tip' ) ] );
             $from   = sanitize_text_field( wp_unslash( $_REQUEST['from'] ?? '' ) );
             $to     = sanitize_text_field( wp_unslash( $_REQUEST['to'] ?? '' ) );
@@ -404,7 +423,7 @@ class Wpcot_Reports {
                     '<span id="displaying-to">' . esc_html( $to ) . '</span>'
             ); ?>
             <a id="wpcot-export-csv"
-               href="<?php echo esc_url( admin_url( 'admin.php?page=wc-reports&tab=wpcot&a=export&from=' . rawurlencode( $from ) . '&to=' . rawurlencode( $to ) . '&names=' . rawurlencode( $names ) . '&status=' . rawurlencode( $status ) ) ); ?>"
+               href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=wc-reports&tab=wpcot&a=export&from=' . rawurlencode( $from ) . '&to=' . rawurlencode( $to ) . '&names=' . rawurlencode( $names ) . '&status=' . rawurlencode( $status ) ), 'wpcot_export_csv' ) ); ?>"
                class="button"><?php esc_html_e( 'Export to CSV', 'wpc-order-tip' ); ?></a>
         </p>
         <table id="wpcot-reports-table" class="wp-list-table widefat fixed striped table-view-list pages">

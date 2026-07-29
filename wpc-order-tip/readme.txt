@@ -3,8 +3,8 @@ Contributors: wpclever
 Donate link: https://wpclever.net
 Tags: woocommerce, wpc, tip, tips, donations
 Tested up to: 7.0
-Version: 3.3.0
-Stable tag: 3.3.0
+Version: 3.3.1
+Stable tag: 3.3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -69,6 +69,9 @@ Please try other plugins from us:
 4. Go to WP-admin > WPClever > Order Tip to add Tips
 
 == Changelog ==
+
+= 3.3.1 =
+* Fixed: Security vulnerability reported by Farid Narimanov
 
 = 3.3.0 =
 * Updated: Optimized the code

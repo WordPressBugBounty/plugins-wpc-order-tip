@@ -625,6 +625,7 @@ body[class*=wpclever_page_] {
     transition: all .15s;
     text-decoration: none;
     line-height: 1.5;
+    min-height: 0;
 }
 
 .wpclever_essential_kit_wrapper .plugin-action-buttons .install-now {
@@ -714,7 +715,7 @@ body[class*=wpclever_page_] {
     transition: all .15s;
     text-decoration: none;
     line-height: 1.5;
-    min-height: auto;
+    min-height: 0;
 }
 
 .wpclever_essential_kit_wrapper .wpc-plugin-card-bottom.premium .activate-now {

@@ -44,6 +44,7 @@
     $this.prop('disabled', true);
     $.post(ajaxurl, {
       action: 'wpcot_add_tip',
+      nonce: wpcot_vars.nonce,
     }, function(response) {
       $('.wpcot-tips-wrapper .wpcot-tips').append(response);
       init_roles();
