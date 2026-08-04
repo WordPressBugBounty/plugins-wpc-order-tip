@@ -338,11 +338,13 @@ class Wpcot_Reports {
                 if ( $has_tip ) {
                     $total += $tip_total;
 
+                    $customer_name = $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
+
                     fputcsv( $fp, [ // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fputcsv
                             $order->get_id(),
                             wc_get_order_status_name( $status ),
-                            $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
-                            implode( ', ', $tip_names ),
+                            $this->sanitize_csv_field( $customer_name ),
+                            $this->sanitize_csv_field( implode( ', ', $tip_names ) ),
                             $tip_total,
                             gmdate( get_option( 'date_format' ), strtotime( $order->get_date_created() ) )
                     ] );
@@ -477,6 +479,29 @@ class Wpcot_Reports {
         </table>
         <?php
         return ob_get_clean();
+    }
+
+    /**
+     * Neutralize formula-injection trigger characters in a CSV cell value.
+     *
+     * Prefixes any value whose first character is one of the formula-trigger
+     * characters recognised by common spreadsheet applications (=, +, -, @,
+     * TAB, CR) with a single-quote so the cell is treated as plain text.
+     *
+     * @see https://owasp.org/www-community/attacks/CSV_Injection (CWE-1236)
+     *
+     * @param string $value Raw field value.
+     * @return string Sanitized field value safe for CSV output.
+     */
+    private function sanitize_csv_field( $value ) {
+        $value = (string) $value;
+
+        if ( '' !== $value && in_array( $value[0], [ '=', '+', '-', '@', "\t", "\r" ], true ) ) {
+            // Prepend a single-quote to force plain-text interpretation.
+            $value = "'" . $value;
+        }
+
+        return $value;
     }
 
     /**
