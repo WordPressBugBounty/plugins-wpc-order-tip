@@ -72,6 +72,7 @@ body[class*=wpclever_page_] {
 /* ──── Page wrap ────────────────────────────────────────────── */
 .wpclever_page {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    width: 90%;
     max-width: 960px;
     margin: 20px auto;
     color: var(--wpc-text);
@@ -83,7 +84,6 @@ body[class*=wpclever_page_] {
     border-radius: var(--wpc-radius) var(--wpc-radius) 0 0;
     padding: 28px 32px;
     margin-bottom: 0;
-    box-shadow: var(--wpc-shadow-md);
     position: relative;
     overflow: hidden;
 }
@@ -157,6 +157,7 @@ body[class*=wpclever_page_] {
 
 .wpc-nav-container {
     display: flex;
+    margin-bottom: -2px;
 }
 
 .wpc-nav-item {
