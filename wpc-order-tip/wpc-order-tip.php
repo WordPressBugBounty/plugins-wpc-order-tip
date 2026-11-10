@@ -8,7 +8,7 @@ Author URI: https://wpclever.net
 Text Domain: wpc-order-tip
 Domain Path: /languages/
 Requires Plugins: woocommerce
-Version: 3.3.4
+Version: 3.4.0
 Requires at least: 5.9
 WC requires at least: 3.0
 WC tested up to: 11.2
@@ -18,7 +18,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 defined( 'ABSPATH' ) || exit;
 
-! defined( 'WPCOT_VERSION' ) && define( 'WPCOT_VERSION', '3.3.4' );
+! defined( 'WPCOT_VERSION' ) && define( 'WPCOT_VERSION', '3.4.0' );
 ! defined( 'WPCOT_LITE' ) && define( 'WPCOT_LITE', __FILE__ );
 ! defined( 'WPCOT_FILE' ) && define( 'WPCOT_FILE', __FILE__ );
 ! defined( 'WPCOT_URI' ) && define( 'WPCOT_URI', plugin_dir_url( __FILE__ ) );
@@ -35,6 +35,13 @@ wpc_core_register( [
         'version' => WPCOT_VERSION,
         'prefix'  => 'wpcot',
 ] );
+
+// Declare compatibility with the WooCommerce Cart/Checkout blocks
+add_action( 'before_woocommerce_init', function () {
+    if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', WPCOT_FILE, true );
+    }
+} );
 
 if ( ! function_exists( 'wpcot_init' ) ) {
     add_action( 'plugins_loaded', 'wpcot_init', 11 );

@@ -70,6 +70,243 @@ class Wpcot_Frontend {
 
 		// shortcode
 		add_shortcode( 'wpcot', [ $this, 'shortcode' ] );
+
+		// WooCommerce Cart/Checkout Blocks integration (Slot/Fill + Store API)
+		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_block_scripts' ] );
+
+		if ( did_action( 'woocommerce_blocks_loaded' ) ) {
+			$this->register_store_api();
+		} else {
+			add_action( 'woocommerce_blocks_loaded', [ $this, 'register_store_api' ] );
+		}
+	}
+
+	/**
+	 * Enqueue the script that renders the tips inside the Cart/Checkout blocks.
+	 */
+	public function enqueue_block_scripts() {
+		if ( ! is_cart() && ! is_checkout() ) {
+			return;
+		}
+
+		// Skip classic (shortcode) pages, the script is only useful for the Cart/Checkout blocks
+		$has_blocks = has_block( 'woocommerce/cart' ) || has_block( 'woocommerce/checkout' );
+
+		if ( ! apply_filters( 'wpcot_enqueue_block_scripts', $has_blocks ) ) {
+			return;
+		}
+
+		wp_enqueue_script( 'wpcot-block-tips', WPCOT_URI . 'assets/js/block-tips.js', [
+			'wc-blocks-checkout',
+			'wp-data',
+			'wp-element',
+			'wp-plugins'
+		], WPCOT_VERSION, true );
+	}
+
+	/**
+	 * Expose tips data and an update callback to the Store API used by the Cart/Checkout blocks.
+	 */
+	public function register_store_api() {
+		if ( ! function_exists( 'woocommerce_store_api_register_endpoint_data' ) || ! function_exists( 'woocommerce_store_api_register_update_callback' ) ) {
+			return;
+		}
+
+		woocommerce_store_api_register_endpoint_data( [
+			'endpoint'        => 'cart',
+			'namespace'       => 'wpcot',
+			'data_callback'   => [ $this, 'get_block_tips_data' ],
+			'schema_callback' => [ $this, 'get_block_tips_schema' ],
+			'schema_type'     => ARRAY_A,
+		] );
+
+		woocommerce_store_api_register_update_callback( [
+			'namespace' => 'wpcot',
+			'callback'  => [ $this, 'block_update_tip' ],
+		] );
+	}
+
+	/**
+	 * Schema of the data exposed to the Cart/Checkout blocks.
+	 *
+	 * @return array
+	 */
+	public function get_block_tips_schema() {
+		$string = [ 'type' => 'string', 'context' => [ 'view', 'edit' ], 'readonly' => true ];
+
+		return [
+			'user_id'         => [ 'type' => 'integer', 'context' => [ 'view', 'edit' ], 'readonly' => true ],
+			'btn_style'       => $string,
+			'no_btn_position' => $string,
+			'click_again'     => [ 'type' => 'boolean', 'context' => [ 'view', 'edit' ], 'readonly' => true ],
+			'none_label'      => $string,
+			'other_label'     => $string,
+			'add_label'       => $string,
+			'tips'            => [
+				'type'     => 'array',
+				'context'  => [ 'view', 'edit' ],
+				'readonly' => true,
+				'items'    => [ 'type' => 'object' ],
+			],
+		];
+	}
+
+	/**
+	 * Build the tips state for the Cart/Checkout blocks.
+	 * Mirrors the logic of get_tips().
+	 *
+	 * @return array
+	 */
+	public function get_block_tips_data() {
+		$decode = function ( $text ) {
+			// Wpcot_Helper()->localization() returns escaped text, but React escapes text on its own
+			return html_entity_decode( (string) $text, ENT_QUOTES, 'UTF-8' );
+		};
+
+		$data = [
+			'user_id'         => get_current_user_id(),
+			'btn_style'       => (string) Wpcot_Helper()->get_setting( 'btn_style', 'square' ),
+			'no_btn_position' => (string) Wpcot_Helper()->get_setting( 'no_btn_position', 'first' ),
+			'click_again'     => Wpcot_Helper()->get_setting( 'click_again', 'yes' ) === 'yes',
+			'none_label'      => $decode( Wpcot_Helper()->localization( 'no', __( 'No, Thanks!', 'wpc-order-tip' ) ) ),
+			'other_label'     => $decode( Wpcot_Helper()->localization( 'other', __( 'Other', 'wpc-order-tip' ) ) ),
+			'add_label'       => $decode( Wpcot_Helper()->localization( 'add', __( 'Add', 'wpc-order-tip' ) ) ),
+			'tips'            => [],
+		];
+
+		$wc_session  = WC()->session;
+		$active_tips = $wc_session ? $wc_session->get( 'wpcot_tips' ) : [];
+		$active_tips = is_array( $active_tips ) ? $active_tips : [];
+
+		foreach ( (array) Wpcot_Helper()->get_tips( 'apply' ) as $key => $tip ) {
+			$default      = ! empty( $tip['default'] ) ? $tip['default'] : '';
+			$custom_min   = ! empty( $tip['custom_min'] ) ? abs( (float) $tip['custom_min'] ) : 0;
+			$custom_max   = ! empty( $tip['custom_max'] ) ? abs( (float) $tip['custom_max'] ) : '';
+			$custom_step  = ! empty( $tip['custom_step'] ) ? abs( (float) $tip['custom_step'] ) : 'any';
+			$custom_value = ! empty( $tip['custom_value'] ) ? abs( (float) $tip['custom_value'] ) : $custom_min;
+			$selected     = isset( $active_tips[ $key ] );
+			$active_value = ! empty( $active_tips[ $key ]['value'] ) ? $active_tips[ $key ]['value'] : '';
+			$has_custom   = $selected && $active_value !== '';
+			$values       = [];
+
+			if ( ! empty( $tip['values'] ) && is_array( $tip['values'] ) ) {
+				foreach ( $tip['values'] as $value ) {
+					if ( ! isset( $value['value'] ) ) {
+						continue;
+					}
+
+					$is_active = $selected && $active_value !== '' && $active_value == $value['value'];
+
+					if ( $is_active ) {
+						$has_custom = false;
+					}
+
+					$values[] = [
+						'label'      => (string) ( $value['label'] ?? '' ),
+						'value'      => (string) $value['value'],
+						'active'     => $is_active,
+						'is_default' => $default !== '' && $default == $value['value'],
+					];
+				}
+			}
+
+			$data['tips'][] = [
+				'key'                => (string) $key,
+				'name'               => (string) ( $tip['name'] ?? '' ),
+				'desc'               => (string) ( $tip['desc'] ?? '' ),
+				'selected'           => $selected,
+				'values'             => $values,
+				// Selected amount that is not one of the predefined values (e.g. a custom amount)
+				'custom_active_html' => ( $has_custom && is_numeric( $active_value ) ) ? wp_kses_post( wc_price( abs( $active_value ) ) ) : '',
+				'custom'             => ! empty( $tip['custom'] ) && $tip['custom'] === 'yes',
+				'custom_min'         => $custom_min,
+				'custom_max'         => $custom_max,
+				'custom_step'        => $custom_step,
+				'custom_value'       => $custom_value,
+			];
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Store API update callback: apply or remove a tip from the Cart/Checkout blocks.
+	 *
+	 * @param array $data Data sent by extensionCartUpdate().
+	 *
+	 * @throws \Automattic\WooCommerce\StoreApi\Exceptions\RouteException When the request is not allowed.
+	 */
+	public function block_update_tip( $data ) {
+		$error = function ( $message ) {
+			throw new \Automattic\WooCommerce\StoreApi\Exceptions\RouteException( 'wpcot_tip_error', esc_html( $message ), 400 );
+		};
+
+		$wc_session = WC()->session;
+		$action     = isset( $data['action'] ) ? sanitize_key( $data['action'] ) : '';
+		$key        = isset( $data['key'] ) ? sanitize_text_field( wp_unslash( $data['key'] ) ) : '';
+		$all_tips   = Wpcot_Helper()->get_tips( 'apply' );
+
+		if ( ! $wc_session || ! isset( $all_tips[ $key ] ) ) {
+			$error( __( 'Invalid tip.', 'wpc-order-tip' ) );
+		}
+
+		$tips = $wc_session->get( 'wpcot_tips' ) ?: [];
+
+		if ( $action === 'remove' ) {
+			unset( $tips[ $key ] );
+		} elseif ( $action === 'apply' ) {
+			$value = isset( $data['value'] ) ? sanitize_text_field( wp_unslash( (string) $data['value'] ) ) : '';
+			$value = $this->validate_block_tip_value( $all_tips[ $key ], $value );
+
+			if ( $value === false ) {
+				$error( __( 'Invalid tip amount.', 'wpc-order-tip' ) );
+			}
+
+			$tips[ $key ]['value'] = $value;
+		} else {
+			$error( __( 'Invalid tip.', 'wpc-order-tip' ) );
+		}
+
+		$wc_session->set( 'wpcot_tips', $tips );
+	}
+
+	/**
+	 * Check a submitted value against the tip configuration.
+	 * Predefined values are accepted as is; other values are only accepted when the custom amount is enabled.
+	 *
+	 * @param array  $tip   The tip configuration data.
+	 * @param string $value The submitted value.
+	 *
+	 * @return string|false The value to store, or false when it is not allowed.
+	 */
+	public function validate_block_tip_value( $tip, $value ) {
+		if ( $value === '' ) {
+			return false;
+		}
+
+		if ( ! empty( $tip['values'] ) && is_array( $tip['values'] ) ) {
+			foreach ( $tip['values'] as $item ) {
+				if ( isset( $item['value'] ) && (string) $item['value'] === $value ) {
+					return $value;
+				}
+			}
+		}
+
+		if ( empty( $tip['custom'] ) || $tip['custom'] !== 'yes' || ! is_numeric( $value ) ) {
+			return false;
+		}
+
+		$amount     = abs( (float) $value );
+		$custom_min = ! empty( $tip['custom_min'] ) ? abs( (float) $tip['custom_min'] ) : 0;
+		$custom_max = ! empty( $tip['custom_max'] ) ? abs( (float) $tip['custom_max'] ) : 0;
+
+		$amount = max( $amount, $custom_min );
+
+		if ( $custom_max > 0 ) {
+			$amount = min( $amount, $custom_max );
+		}
+
+		return $amount > 0 ? (string) $amount : false;
 	}
 
 	public function enqueue_scripts() {

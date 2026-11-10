@@ -23,6 +23,16 @@
 }
 
 .wpcot-tips {
+  &.wpcot-tips-block {
+    margin: 16px 0;
+  }
+
+  .wpcot-block-msg {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #b91c1c;
+  }
+
   .wpcot-tip {
     padding: 10px 0;
 
@@ -43,6 +53,11 @@
         border: 1px solid #dddddd;
         padding: 2px;
         cursor: pointer;
+
+        &:focus-visible {
+          outline: 2px solid #458746;
+          outline-offset: 2px;
+        }
 
         > span {
           display: inline-block;
@@ -95,6 +110,10 @@
 
     .wpcot-tip-custom {
       display: none;
+
+      &.is-open {
+        display: block;
+      }
 
       .wpcot-tip-custom-form {
         display: flex;

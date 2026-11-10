@@ -3,7 +3,7 @@ Contributors: wpclever
 Donate link: https://wpclever.net
 Tags: woocommerce, wpc, tip, tips, donations
 Tested up to: 7.1
-Stable tag: 3.3.4
+Stable tag: 3.4.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,6 +35,7 @@ These options will be displayed on the cart page so that before closing the deal
 - Multiple types of values per set: fixed amount, percentage or custom value
 - Configure min, max, step, default value for custom amount
 - Nice and sleek buttons for tip options in the frontend
+- Fully compatible with the WooCommerce Cart & Checkout blocks
 - Automatically add up the extra tips to the order subtotal
 - Easily add a custom label for each option value
 - Drag and drop to change the order of tip sets
@@ -68,6 +69,10 @@ Please try other plugins from us:
 4. Go to WP-admin > WPClever > Order Tip to add Tips
 
 == Changelog ==
+
+= 3.4.0 =
+* Added: Display tip options on the WooCommerce Cart & Checkout blocks
+* Added: Declare compatibility with WooCommerce Cart & Checkout blocks
 
 = 3.3.4 =
 * Fixed: Minor CSS/JS issues in the backend

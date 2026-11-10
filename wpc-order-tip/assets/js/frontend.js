@@ -1,9 +1,12 @@
 (function($) {
   'use strict';
 
+  // Tips rendered by the Cart/Checkout blocks (block-tips.js) handle their own events
+  var scope = '.wpcot-tips:not(.wpcot-tips-block) ';
+
   $(function() {
     // ready
-    $('.wpcot-tip-value.active-default').each(function() {
+    $(scope + '.wpcot-tip-value.active-default').each(function() {
       var $this = $(this);
       var key = $this.closest('.wpcot-tip').data('key');
 
@@ -14,18 +17,18 @@
     });
   });
 
-  $('body').on('click touch touchstart', '.wpcot-tip-value', function(e) {
+  $('body').on('click touch touchstart', scope + '.wpcot-tip-value', function(e) {
     e.preventDefault();
     apply_tip($(this));
   });
 
-  $('body').on('click touch touchstart', '.wpcot-tip-value-custom', function(e) {
+  $('body').on('click touch touchstart', scope + '.wpcot-tip-value-custom', function(e) {
     e.preventDefault();
 
     $(this).closest('.wpcot-tip').find('.wpcot-tip-custom').slideToggle();
   });
 
-  $('body').on('click touch touchstart', '.wpcot-tip-custom-add', function(e) {
+  $('body').on('click touch touchstart', scope + '.wpcot-tip-custom-add', function(e) {
     e.preventDefault();
 
     var $this = $(this);

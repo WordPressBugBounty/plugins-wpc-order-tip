@@ -22,6 +22,16 @@
     }
 }
 
+.wpcot-tips.wpcot-tips-block {
+    margin: 16px 0;
+}
+
+.wpcot-tips .wpcot-block-msg {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #b91c1c;
+}
+
 .wpcot-tips .wpcot-tip {
     padding: 10px 0;
 }
@@ -44,6 +54,11 @@
     border: 1px solid #dddddd;
     padding: 2px;
     cursor: pointer;
+}
+
+.wpcot-tips .wpcot-tip .wpcot-tip-values .wpcot-tip-value:focus-visible, .wpcot-tips .wpcot-tip .wpcot-tip-values .wpcot-tip-value-custom:focus-visible {
+    outline: 2px solid #458746;
+    outline-offset: 2px;
 }
 
 .wpcot-tips .wpcot-tip .wpcot-tip-values .wpcot-tip-value > span, .wpcot-tips .wpcot-tip .wpcot-tip-values .wpcot-tip-value-custom > span {
@@ -95,6 +110,10 @@
 
 .wpcot-tips .wpcot-tip .wpcot-tip-custom {
     display: none;
+}
+
+.wpcot-tips .wpcot-tip .wpcot-tip-custom.is-open {
+    display: block;
 }
 
 .wpcot-tips .wpcot-tip .wpcot-tip-custom .wpcot-tip-custom-form {
